@@ -1,0 +1,9 @@
+<launch>
+    <node pkg="ssafy_1" type="get_camera.py" name="my_camera" />
+    <node pkg="ssafy_1" type="get_collision_status.py" name="my_collision" />
+    <node pkg="ssafy_1" type="get_ego_status.py" name="my_ego_status" />
+    <node pkg="ssafy_1" type="get_gps.py" name="my_gps" />
+    <node pkg="ssafy_1" type="get_imu.py" name="my_imu" />
+    <node pkg="ssafy_1" type="get_obj_status.py" name="my_object" />
+    <node pkg="ssafy_1" type="get_traffic_status.py" name="my_traffic" />
+</launch>
