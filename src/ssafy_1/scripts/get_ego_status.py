@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import rospy
+import rospy, os
 from morai_msgs.msg import EgoVehicleStatus
 # Ego_status_listener 는 시뮬레이터에서 송신하는 Ego 차량 정보를 Subscriber 하는 예제 입니다.
 # 시뮬레이터 내 Ego 차량의 정보인 /Ego_topic 라는 메세지를 Subscribe 합니다.
@@ -17,6 +17,7 @@ from morai_msgs.msg import EgoVehicleStatus
 # 위치와 속도 가속도 heading 값을 아래 형식에 맞춰서 작성하여 터미널 창에 출력해볼 수 있습니다. 
 
 def EgoStatus_callback(data):
+    os.system('clear')
     rospy.loginfo('------------------Ego Vehicle Status------------------')
     rospy.loginfo('position     : x = {0} , y = {1}, z = {2}'.format(data.position.x, data.position.y, data.position.z))
     rospy.loginfo('velocity     : x = {0} , y = {1}, z = {2} m/s^2'.format(data.velocity.x, data.velocity.y, data.velocity.z))
