@@ -48,14 +48,14 @@ class pure_pursuit :
         # CtrlCmd 은 1장을 참고 한다.
         # Ego topic 데이터는 차량의 현재 속도를 알기 위해 사용한다.
         # Gloabl Path 데이터는 경로의 곡률을 이용한 속도 계획을 위해 사용한다.
+        '''
         rospy.Subscriber("/global_path" )
         rospy.Subscriber("local_path" )
         rospy.Subscriber("odom" )
         rospy.Subscriber("/Ego_topic" )
         rospy.Subscriber("/Object_topic" )
-        self.ctrl_cmd_pub = 
+        self.ctrl_cmd_pub = 1
 
-        '''
 
         self.ctrl_cmd_msg = CtrlCmd()
         self.ctrl_cmd_msg.longlCmdType = 1
