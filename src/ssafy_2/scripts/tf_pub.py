@@ -21,7 +21,6 @@ class Ego_listener():
     #TODO: (1) Callback 함수 생성
     def odom_callback(self,msg):
         self.is_odom = True
-        print(msg)
         # gpsimu_parser.py 예제에서 Publish 해주는 Odometry 메세지 데이터를 Subscrib 한다.
         # Odometry 메세지 에 담긴 물체의 위치 와 자세 데이터를 아래 변수에 넣어준다.
         self.x = msg.pose.pose.position.x

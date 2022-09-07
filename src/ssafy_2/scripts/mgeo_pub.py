@@ -26,11 +26,10 @@ from lib.mgeo.class_defs import *
 class get_mgeo :
     def __init__(self):
         rospy.init_node('test', anonymous=True)
-        self.link_pub = rospy.Publisher('link',PointCloud, queue_size=1)
-        self.node_pub = rospy.Publisher('node',PointCloud, queue_size=1)
+        self.link_pub = rospy.Publisher('/link',PointCloud, queue_size=1)
+        self.node_pub = rospy.Publisher('/node',PointCloud, queue_size=1)
 
         #TODO: (1) Mgeo data 읽어온 후 데이터 확인
-        '''
         # Json 파일 형식으로 저장된 MGeo 데이터를 읽어오는 예제 입니다.
         # VScode 의 debug 기능을 이용하여 MGeo 데이터를 확인 할 수 있습니다.
         # MGeo 데이터는 인접 리스트 방식의 그래프 구조 입니다.
@@ -43,8 +42,6 @@ class get_mgeo :
         # 각각의 Node Link 정보는 이름인 idx 정보를 가집니다 idx 는 중복 될 수 없습니다. 
         # to_links , from_links , to_node , from_node ... 등 
         # MGeo에 정의되어 있는 데이터를 활용해 각 Node 와 Link 간 연결 성을 나타낼 수 있습니다.
-        
-        '''
         load_path = os.path.normpath(os.path.join(current_path, 'lib/mgeo_data/R_KR_PG_K-City'))
         mgeo_planner_map = MGeo.create_instance_from_json(load_path)
 
@@ -62,33 +59,21 @@ class get_mgeo :
 
         rate = rospy.Rate(1) 
         while not rospy.is_shutdown():
-
             #TODO: (4) 변환한 Link, Node 정보 Publish
-            '''
             # 변환한 Link, Node 정보 를 전송하는 publisher 를 만든다.
-            self.link_pub.
-            self.node_pub.
-            
-            '''
-                
+            self.link_pub.publish(self.link_msg)
+            self.node_pub.publish(self.node_msg)
             rate.sleep()
-
 
     def getAllLinks(self):
         all_link=PointCloud()
         all_link.header.frame_id='map'
-
         #TODO: (2) Link 정보 Point Cloud 데이터로 변환
-        '''
         # Point Cloud 형식으로 Link 의 좌표 정보를 변환합니다.
         # Link 의 개수 만큼 반복하는 반복 문을 이용해 Link 정보를 Point Cloud 형식 데이터에 넣습니다.
-
         for link_idx in self.links :
-            for  in :
-
-        
-        '''
-
+            all_link.points.append(link_idx)
+        print(all_link)
         return all_link
     
     def getAllNode(self):
@@ -96,14 +81,11 @@ class get_mgeo :
         all_node.header.frame_id='map'
 
         #TODO: (3) Node 정보 Point Cloud 데이터로 변환
-        '''
         # Point Cloud 형식으로 Node 의 좌표 정보를 변환합니다.
         # Node 의 개수 만큼 반복하는 반복 문을 이용해 Node 정보를 Point Cloud 형식 데이터에 넣습니다.
-
         for node_idx in self.nodes :
-
-        '''
-
+            all_node.points.append(node_idx)
+        print(all_node)
         return all_node
 
 

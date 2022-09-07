@@ -48,8 +48,8 @@ class LL2UTMConverter:
         os.system('clear')
         print('lat : {}'.format(self.lat))
         print('lon : {}'.format(self.lon))
-        print('utm X : %9.3f' % self.x)
-        print('utm Y : %11.3f' % self.y)
+        print('utm X : {}'.format(self.x))
+        print('utm Y : {}'.format(self.y))
 
     #TODO: (3) 위도 경도 데이터를 UTM 좌표로 변환
     def convertLL2UTM(self):
