@@ -93,7 +93,7 @@ class get_mgeo :
         # Point Cloud 형식으로 Node 의 좌표 정보를 변환합니다.
         # Node 의 개수 만큼 반복하는 반복 문을 이용해 Node 정보를 Point Cloud 형식 데이터에 넣습니다.
         for node_idx in self.nodes:
-            point = self.nodes[node_idx].to_dict()['point']
+            point = self.nodes[node_idx].point
             temp = Point32()
             temp.x = point[0]
             temp.y = point[1]
