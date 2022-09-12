@@ -37,7 +37,6 @@ from lib.mgeo.class_defs import *
 # 11. dijkstra 이용해 만든 Global Path 정보 Publish
 
 #TODO: (0) 필수 학습 지식
-'''
 # dijkstra 알고리즘은 그래프 구조에서 노드 간 최단 경로를 찾는 알고리즘 입니다.
 # 시작 노드부터 다른 모든 노드까지의 최단 경로를 탐색합니다.
 # 다양한 서비스에서 실제로 사용 되며 인공 위성에도 사용되는 방식 입니다.
@@ -52,7 +51,6 @@ from lib.mgeo.class_defs import *
 # 5. 3 ~ 4 과정을 반복 
 # 
 
-'''
 class dijkstra_path_pub :
     def __init__(self):
         rospy.init_node('dijkstra_path_pub', anonymous=True)
