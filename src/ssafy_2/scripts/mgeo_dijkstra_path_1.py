@@ -36,7 +36,6 @@ from lib.mgeo.class_defs import *
 # 11. dijkstra 이용해 만든 Global Path 정보 Publish
 
 #TODO: (0) 필수 학습 지식
-'''
 # dijkstra 알고리즘은 그래프 구조에서 노드 간 최단 경로를 찾는 알고리즘 입니다.
 # 시작 노드부터 다른 모든 노드까지의 최단 경로를 탐색합니다.
 # 다양한 서비스에서 실제로 사용 되며 인공 위성에도 사용되는 방식 입니다.
@@ -49,9 +48,7 @@ from lib.mgeo.class_defs import *
 #   [   새로 조사된 최단 거리 : 시작 노드에서 방문 노드 까지의 거리 비용 + 방문 노드에서 인접 노드까지의 거리 비용    ]
 #   [   기존 발견된 최단 거리 : 시작 노드에서 인접 노드까지의 거리 비용                                       ]
 # 5. 3 ~ 4 과정을 반복 
-# 
 
-'''
 class dijkstra_path_pub :
     def __init__(self):
         rospy.init_node('dijkstra_path_pub', anonymous=True)
@@ -65,13 +62,13 @@ class dijkstra_path_pub :
         node_set = mgeo_planner_map.node_set
         link_set = mgeo_planner_map.link_set
 
+
         self.nodes=node_set.nodes
         self.links=link_set.lines
 
         self.global_planner=Dijkstra(self.nodes,self.links)
 
         #TODO: (2) 시작 Node 와 종료 Node 정의
-        '''
         # Dijkstra Path 를 만들기 위한 출발 Node 와 도착 Node의 Idx 를 지정합니다.
         # MGeo 데이터는 Json 파일로 Idx 정보를 확인 할 수 있지만 시뮬레이터를 통해 직접 확인 가능합니다.
         # F8 키보드 입력 또는 시뮬레이터에서 화면 좌측 상단에 View --> MGeo Viewer 를 클릭합니다.
@@ -81,8 +78,6 @@ class dijkstra_path_pub :
         self.start_node = 'A119BS010184'
         self.end_node = 'A119BS010148'
 
-        '''
-
         self.global_path_msg = Path()
         self.global_path_msg.header.frame_id = '/map'
 
@@ -91,24 +86,16 @@ class dijkstra_path_pub :
         rate = rospy.Rate(10) # 10hz
         while not rospy.is_shutdown():
             #TODO: (11) dijkstra 이용해 만든 Global Path 정보 Publish
-            '''
             # dijkstra 이용해 만든 Global Path 메세지 를 전송하는 publisher 를 만든다.
-            self.global_path_pub.
-            
-            '''
+            self.global_path_pub.publish(self.global_path_msg)
             rate.sleep()
 
     def calc_dijkstra_path_node(self, start_node, end_node):
-
         result, path = self.global_planner.find_shortest_path(start_node, end_node)
-
         #TODO: (10) dijkstra 경로 데이터를 ROS Path 메세지 형식에 맞춰 정의
         out_path = Path()
         out_path.header.frame_id = '/map'
-        '''
         # dijkstra 경로 데이터 중 Point 정보를 이용하여 Path 데이터를 만들어 줍니다.
-
-        '''
 
         return out_path
 
@@ -122,7 +109,6 @@ class Dijkstra:
 
     def get_weight_matrix(self):
         #TODO: (3) weight 값 계산
-        '''
         # weight 값 계산은 각 Node 에서 인접 한 다른 Node 까지의 비용을 계산합니다.
         # 계산된 weight 값 은 각 노드간 이동시 발생하는 비용(거리)을 가지고 있기 때문에
         # Dijkstra 탐색에서 중요하게 사용 됩니다.
@@ -131,12 +117,11 @@ class Dijkstra:
         # Key 값으로 Node의 Idx Value 값으로 다른 노드 까지의 비용을 가지도록 합니다.
         # 아래 코드 중 self.find_shortest_link_leading_to_node 를 완성하여 
         # Dijkstra 알고리즘 계산을 위한 Node와 Node 사이의 최단 거리를 계산합니다.
-
-        '''
+        
         # 초기 설정
         weight = dict() 
         for from_node_id, from_node in self.nodes.items():
-            # 현재 노드에서 다른 노드로 진행하는 모든 weight
+            # 현재 노드에서 다른 노드로 진행하는 모든 weight 
             weight_from_this_node = dict()
             for to_node_id, to_node in self.nodes.items():
                 weight_from_this_node[to_node_id] = float('inf')
@@ -155,13 +140,11 @@ class Dijkstra:
         return weight
 
     def find_shortest_link_leading_to_node(self, from_node,to_node):
-        """현재 노드에서 to_node로 연결되어 있는 링크를 찾고, 그 중에서 가장 빠른 링크를 찾아준다"""
+        # 현재 노드에서 to_node로 연결되어 있는 링크를 찾고, 그 중에서 가장 빠른 링크를 찾아준다
         #TODO: (3) weight 값 계산
-        '''
         # 최단거리 Link 인 shortest_link 변수와
         # shortest_link 의 min_cost 를 계산 합니다.
 
-        '''
 
         return shortest_link, min_cost
         
@@ -180,7 +163,6 @@ class Dijkstra:
         #TODO: (4) Dijkstra Path 초기화 로직
         # s 초기화         >> s = [False] * len(self.nodes)
         # from_node 초기화 >> from_node = [start_node_idx] * len(self.nodes)
-        '''
         # Dijkstra 경로 탐색을 위한 초기화 로직 입니다.
         # 변수 s와 from_node 는 딕셔너리 형태로 크기를 MGeo의 Node 의 개수로 설정합니다. 
         # Dijkstra 알고리즘으로 탐색 한 Node 는 변수 s 에 True 로 탐색하지 않은 변수는 False 로 합니다.
@@ -188,8 +170,7 @@ class Dijkstra:
         # from_node 의 Value 값은 Key 값의 Node Idx 에서 가장 비용이 작은(가장 가까운) Node Idx로 합니다.
         # from_node 통해 각 Node 에서 가장 가까운 Node 찾고
         # 이를 연결해 시작 노드부터 도착 노드 까지의 최단 경로를 탐색합니다. 
-
-        '''
+        
         s = dict()
         from_node = dict() 
         for node_id in self.nodes.keys():
