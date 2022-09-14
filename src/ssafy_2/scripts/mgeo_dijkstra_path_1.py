@@ -144,7 +144,7 @@ class Dijkstra:
         # 최단거리 Link 인 shortest_link 변수와
         # shortest_link 의 min_cost 를 계산 합니다.
         to_links = []
-        for link in self.get_to_links():
+        for link in from_node.get_to_links():
             if link.to_node is to_node:
                 to_links.append(link)
 
