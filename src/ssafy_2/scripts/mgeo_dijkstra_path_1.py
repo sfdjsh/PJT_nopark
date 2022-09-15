@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# from asyncio import get_child_watcher
 import rospy
 import rospkg
 import sys
@@ -8,6 +9,7 @@ import os
 import copy
 import numpy as np
 import json
+import heapq
 
 from math import cos,sin,sqrt,pow,atan2,pi
 from geometry_msgs.msg import Point32,PoseStamped
@@ -134,17 +136,21 @@ class Dijkstra:
 
             for to_node in from_node.get_to_nodes():
                 # 현재 노드에서 to_node로 연결되어 있는 링크를 찾고, 그 중에서 가장 빠른 링크를 찾아준다
-                shortest_link, min_cost = self.find_shortest_link_leading_to_node(from_node,to_node)
+                shortest_link, min_cost = self.find_shortest_link_leading_to_node(from_node, to_node)
                 weight[from_node_id][to_node.idx] = min_cost           
 
         return weight
 
-    def find_shortest_link_leading_to_node(self, from_node,to_node):
+    def find_shortest_link_leading_to_node(self, from_node, to_node):
         # 현재 노드에서 to_node로 연결되어 있는 링크를 찾고, 그 중에서 가장 빠른 링크를 찾아준다
         #TODO: (3) weight 값 계산
         # 최단거리 Link 인 shortest_link 변수와
         # shortest_link 의 min_cost 를 계산 합니다.
 
+        shortest_link=''
+        min_cost=0
+        print(from_node.from_links)
+        print(to_node.from_links)
 
         return shortest_link, min_cost
         
@@ -159,7 +165,7 @@ class Dijkstra:
                 min_idx = idx
         return min_idx
 
-    def find_shortest_path(self, start_node_idx, end_node_idx): 
+    def find_shortest_path(self, from_node_node_idx, end_node_idx): 
         #TODO: (4) Dijkstra Path 초기화 로직
         # s 초기화         >> s = [False] * len(self.nodes)
         # from_node 초기화 >> from_node = [start_node_idx] * len(self.nodes)
