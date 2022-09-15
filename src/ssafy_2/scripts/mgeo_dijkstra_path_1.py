@@ -142,6 +142,7 @@ class Dijkstra:
         return weight
 
     def find_shortest_link_leading_to_node(self, from_node, to_node):
+<<<<<<< HEAD
         # 현재 노드에서 to_node로 연결되어 있는 링크를 찾고, 그 중에서 가장 빠른 링크를 찾아준다
         #TODO: (3) weight 값 계산
         # 최단거리 Link 인 shortest_link 변수와
@@ -151,6 +152,25 @@ class Dijkstra:
         min_cost=0
         print(from_node.from_links)
         print(to_node.from_links)
+=======
+        # TODO: (3) weight 값 계산
+        # 최단거리 Link 인 shortest_link 변수와
+        # shortest_link 의 min_cost 를 계산 합니다.
+        to_links = []
+        for link in from_node.get_to_links():
+            if link.to_node is to_node:
+                to_links.append(link)
+
+        if len(to_links) == 0:
+            raise BaseException('[ERROR] Error @ Dijkstra.find_shortest_path : Internal data error. There is no link from node (id={}) to node (id={})'.format(self.idx, to_node.idx))
+
+        shortest_link = None
+        min_cost = float('inf')
+        for link in to_links:
+            if link.cost < min_cost:
+                min_cost = link.cost
+                shortest_link = link
+>>>>>>> c1caf1a20f52e46d492d069405eab20353a27b64
 
         return shortest_link, min_cost
         
