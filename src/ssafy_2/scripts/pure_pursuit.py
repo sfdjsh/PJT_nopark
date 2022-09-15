@@ -22,7 +22,6 @@ import tf
 # 4. 제어입력 메세지 Publish
 
 #TODO: (0) 필수 학습 지식
-'''
 # Pure Pursuit 은 차량의 Kinematic Model Based 경로 추종 알고리즘 입니다.
 # 현재 차량의 Heading 각도와 실제 Path 의 각도 오차를 계산하여 차량의 조향 각도를 계산합니다.
 # 전방주시거리(Look Forward Distance) 라는 변수를 가지고 있습니다.
@@ -31,21 +30,17 @@ import tf
 # 직접 "self.lfd" 변수의 값에 적절한 값을 넣어 제어 알고리즘의 성능을 올릴 수 있습니다.
 # 아래 정의 된 변수 중 "self.vehicle_length" 와 "self.lfd" 를 변경 하여서 직접 제어기 성능을 튜닝 해보세요.
 
-'''
 class pure_pursuit :
     def __init__(self):
         rospy.init_node('pure_pursuit', anonymous=True)
 
         #TODO: (1) subscriber, publisher 선언
-        '''
         # Local Path 와 Odometry 데이터를 수신 할 Subscriber 를 만들고 
         # CtrlCmd 를 시뮬레이터로 전송 할 publisher 변수를 만든다.
         # CtrlCmd 은 1장을 참고 한다.
-        rospy.Subscriber("local_path" )
-        rospy.Subscriber("odom" )
-        self.ctrl_cmd_pub = 
-
-        '''
+        rospy.Subscriber("/local_path", Path, self.path_callback)
+        rospy.Subscriber("/odom", Odometry, self.odom_callback)
+        self.ctrl_cmd_pub = rospy.Publisher('/ctrl_cmd', CtrlCmd, queue_size=1)
 
         self.ctrl_cmd_msg=CtrlCmd()
         self.ctrl_cmd_msg.longlCmdType=2
@@ -63,9 +58,7 @@ class pure_pursuit :
 
         rate = rospy.Rate(30) # 30hz
         while not rospy.is_shutdown():
-
             if self.is_path ==True and self.is_odom==True  :
-
                 steering = self.calc_pure_pursuit()
                 if self.is_look_forward_point :
                     self.ctrl_cmd_msg.steering = steering
@@ -77,11 +70,8 @@ class pure_pursuit :
                     self.ctrl_cmd_msg.velocity = 0.0
 
                 #TODO: (4) 제어입력 메세지 Publish
-                '''
                 # 제어입력 메세지 를 전송하는 publisher 를 만든다.
-                self.ctrl_cmd_pub.
-                
-                '''
+                self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
 
             rate.sleep()
 
@@ -99,11 +89,9 @@ class pure_pursuit :
     def calc_pure_pursuit(self,):                
         vehicle_position=self.current_postion
         self.is_look_forward_point= False
-
         translation = [vehicle_position.x, vehicle_position.y]
 
         #TODO: (2) 좌표 변환 행렬 생성
-        '''
         # Pure Pursuit 알고리즘을 실행 하기 위해서 차량 기준의 좌표계가 필요합니다.
         # Path 데이터를 현재 차량 기준 좌표계로 좌표 변환이 필요합니다.
         # 좌표 변환을 위한 좌표 변환 행렬을 작성합니다.
@@ -112,36 +100,31 @@ class pure_pursuit :
         # 좌표 변환 행렬을 이용해 Path 데이터를 차량 기준 좌표 계로 바꾸는 반복 문을 작성 한 뒤
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
-        trans_matrix = np.array([   [                       ,                       ,               ],
-                                    [                       ,                       ,               ],
-                                    [0                      ,0                      ,1              ]])
+        trans_matrix = np.array([
+            [1, 1], [1, 1]
+        ])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
 
-        for num,i in enumerate(self.path.poses) :
+        for num, i in enumerate(self.path.poses) :
             path_point = 
 
-            global_path_point = [ , , 1]
+            global_path_point = [1, 1]
             local_path_point = det_trans_matrix.dot(global_path_point)    
 
-            if local_path_point[0]>0 :
+            if local_path_point[0] > 0 :
                 dis = 
                 if dis >= self.lfd :
                     self.forward_point = 
                     self.is_look_forward_point = True
                     break
-
-        '''
         
         #TODO: (3) Steering 각도 계산
-        '''
         # 제어 입력을 위한 Steering 각도를 계산 합니다.
         # theta 는 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 좌표의 각도를 계산 합니다.
         # Steering 각도는 Pure Pursuit 알고리즘의 각도 계산 수식을 적용하여 조향 각도를 계산합니다.
         theta = 
         steering = 
-
-        '''
 
         return steering
 
