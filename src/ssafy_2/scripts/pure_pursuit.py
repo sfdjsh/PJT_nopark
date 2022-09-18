@@ -86,7 +86,7 @@ class pure_pursuit :
         self.current_postion.x=msg.pose.pose.position.x
         self.current_postion.y=msg.pose.pose.position.y
 
-    def calc_pure_pursuit(self,):                
+    def calc_pure_pursuit(self):                
         vehicle_position=self.current_postion
         self.is_look_forward_point= False
         trans_pos = [vehicle_position.x, vehicle_position.y]
@@ -101,24 +101,26 @@ class pure_pursuit :
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
         trans_matrix = np.array([
-            [cos(-self.vehicle_yaw), -sin(self.vehicle_yaw), 0],
-            [sin(-self.vehicle_yaw), cos(self.vehicle_yaw), 0],
+            [cos(-self.vehicle_yaw), -sin(-self.vehicle_yaw), -1],
+            [sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), -1],
             [0, 0, 1]
         ])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
 
+        # 일단 제 추측으로는 여기에서 수정이 필요할 것 같아요
         for num, i in enumerate(self.path.poses) :
             path_point = num
-            global_path_point = [i.pose.position.x, i.pose.position.y, 1]
+            global_path_point = [i.pose.position.x - trans_pos[0], i.pose.position.y - trans_pos[1], 1]
             local_path_point = det_trans_matrix.dot(global_path_point)    
 
             if local_path_point[0] > 0 :
-                dis = path_point
+                dis = sqrt(pow(local_path_point[0], 2) + pow(local_path_point[1], 2))
                 if dis >= self.lfd :
                     self.forward_point = path_point
                     self.is_look_forward_point = True
                     break
+        # 여기까지
         
         #TODO: (3) Steering 각도 계산
         # 제어 입력을 위한 Steering 각도를 계산 합니다.
