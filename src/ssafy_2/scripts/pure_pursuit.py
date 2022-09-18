@@ -53,7 +53,7 @@ class pure_pursuit :
         self.forward_point=Point()
         self.current_postion=Point()
 
-        self.vehicle_length = 1
+        self.vehicle_length = 4.3561
         self.lfd = 1
 
         rate = rospy.Rate(30) # 30hz
@@ -63,9 +63,9 @@ class pure_pursuit :
                 if self.is_look_forward_point :
                     self.ctrl_cmd_msg.steering = steering
                     self.ctrl_cmd_msg.velocity = 20.0
-                    print(self.ctrl_cmd_msg.steering)
+                    rospy.loginfo(self.ctrl_cmd_msg.steering)
                 else : 
-                    print("no found forward point")
+                    # rospy.loginfo("no found forward point")
                     self.ctrl_cmd_msg.steering = 0.0
                     self.ctrl_cmd_msg.velocity = 0.0
 
@@ -86,12 +86,12 @@ class pure_pursuit :
         self.current_postion.x=msg.pose.pose.position.x
         self.current_postion.y=msg.pose.pose.position.y
 
-    def calc_pure_pursuit(self,):                
+    def calc_pure_pursuit(self):                
         vehicle_position=self.current_postion
         self.is_look_forward_point= False
-        translation = [vehicle_position.x, vehicle_position.y]
+        trans_pos = [vehicle_position.x, vehicle_position.y]
 
-        #TODO: (2) 좌표 변환 행렬 생성
+        # TODO: (2) 좌표 변환 행렬 생성
         # Pure Pursuit 알고리즘을 실행 하기 위해서 차량 기준의 좌표계가 필요합니다.
         # Path 데이터를 현재 차량 기준 좌표계로 좌표 변환이 필요합니다.
         # 좌표 변환을 위한 좌표 변환 행렬을 작성합니다.
@@ -101,21 +101,22 @@ class pure_pursuit :
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
         trans_matrix = np.array([
-            [1, 1], [1, 1]
+            [cos(-self.vehicle_yaw), -sin(-self.vehicle_yaw), 0],
+            [sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
+            [0, 0, 1]
         ])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
-
         for num, i in enumerate(self.path.poses) :
-            path_point = 
-
-            global_path_point = [1, 1]
-            local_path_point = det_trans_matrix.dot(global_path_point)    
+            path_point = num
+            global_path_point = [i.pose.position.x - trans_pos[0], i.pose.position.y - trans_pos[1], 1]
+            local_path_point = det_trans_matrix.dot(global_path_point)
+            rospy.loginfo(local_path_point)
 
             if local_path_point[0] > 0 :
-                dis = 
+                dis = sqrt(pow(local_path_point[0], 2) + pow(local_path_point[1], 2))
                 if dis >= self.lfd :
-                    self.forward_point = 
+                    self.forward_point = path_point
                     self.is_look_forward_point = True
                     break
         
@@ -123,8 +124,11 @@ class pure_pursuit :
         # 제어 입력을 위한 Steering 각도를 계산 합니다.
         # theta 는 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 좌표의 각도를 계산 합니다.
         # Steering 각도는 Pure Pursuit 알고리즘의 각도 계산 수식을 적용하여 조향 각도를 계산합니다.
-        theta = 
-        steering = 
+        theta = atan2(local_path_point[1], local_path_point[0])
+        steering = atan2(
+            2 * self.vehicle_length * sin(theta),
+            self.lfd
+        )
 
         return steering
 
