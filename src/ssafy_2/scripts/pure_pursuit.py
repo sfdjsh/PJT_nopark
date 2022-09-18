@@ -62,8 +62,8 @@ class pure_pursuit :
                 steering = self.calc_pure_pursuit()
                 if self.is_look_forward_point :
                     self.ctrl_cmd_msg.steering = steering
-                    self.ctrl_cmd_msg.velocity = 20.0
-                    rospy.loginfo(self.ctrl_cmd_msg.steering)
+                    self.ctrl_cmd_msg.velocity = 40.0
+                    # rospy.loginfo(self.ctrl_cmd_msg.steering)
                 else : 
                     # rospy.loginfo("no found forward point")
                     self.ctrl_cmd_msg.steering = 0.0
@@ -101,16 +101,20 @@ class pure_pursuit :
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
         trans_matrix = np.array([
-            [cos(-self.vehicle_yaw), -sin(-self.vehicle_yaw), 0],
-            [sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
+            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), 0],
+            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
             [0, 0, 1]
         ])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
 
         # 일단 제 추측으로는 여기에서 수정이 필요할 것 같아요
-        for num, i in enumerate(self.path.poses) :
-            path_point = num
+        for num, i in enumerate(self.path.poses):
+            path_point = {
+                'x': i.pose.position.x,
+                'y': i.pose.position.y,
+                'z': 0.0
+            }
             global_path_point = [i.pose.position.x - trans_pos[0], i.pose.position.y - trans_pos[1], 1]
             local_path_point = det_trans_matrix.dot(global_path_point)    
 
@@ -133,7 +137,6 @@ class pure_pursuit :
         )
 
         return steering
-
 
 if __name__ == '__main__':
     try:
