@@ -1,6 +1,10 @@
 # 특화 - 모빌리티 (자율주행) C109
 <br>
 
+## Team Member & role
+![TeamMember](./개발현황/image_src/TeamMember.png)
+<br>
+
 ## Production for Middle evaluation
 ### 1. [기능명세](https://www.notion.so/go-to-the-mars/b8df94bee36f43daaa529e278a64f8d4?v=7a34cb580f0e43b5aaeb68cf7e2f4d74)
 
