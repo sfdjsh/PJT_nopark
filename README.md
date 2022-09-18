@@ -1,7 +1,7 @@
 # 특화 - 모빌리티 (자율주행) C109
 <br>
 
-## Team Member & role
+## Team Member & Role
 ![TeamMember](./개발현황/image_src/TeamMember.png)
 <br>
 
