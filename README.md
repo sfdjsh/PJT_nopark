@@ -1,7 +1,7 @@
-# 중간평가
+# 특화 - 모빌리티 (자율주행) C109
 
 
-## 산출물 
+## Production for Middle evaluation
 ### 1. [기능명세](https://www.notion.so/go-to-the-mars/b8df94bee36f43daaa529e278a64f8d4?v=7a34cb580f0e43b5aaeb68cf7e2f4d74)
 
 ### 2. [진행 상황(시연)](https://www.notion.so/go-to-the-mars/446c4bcbc9544275a2a2ea49516404bc)
