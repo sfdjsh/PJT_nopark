@@ -102,7 +102,7 @@ class pure_pursuit :
 
         trans_matrix = np.array([
             [cos(-self.vehicle_yaw), -sin(self.vehicle_yaw), 0],
-            [sin(-self.vehicle_yaw), -cos(self.vehicle_yaw), 0],
+            [sin(-self.vehicle_yaw), cos(self.vehicle_yaw), 0],
             [0, 0, 1]
         ])
 
@@ -110,13 +110,13 @@ class pure_pursuit :
 
         for num, i in enumerate(self.path.poses) :
             path_point = num
-            global_path_point = [i.pose.position.x, i.pose.position.y]
+            global_path_point = [i.pose.position.x, i.pose.position.y, 1]
             local_path_point = det_trans_matrix.dot(global_path_point)    
 
             if local_path_point[0] > 0 :
                 dis = path_point
                 if dis >= self.lfd :
-                    self.forward_point = 
+                    self.forward_point = path_point
                     self.is_look_forward_point = True
                     break
         
@@ -124,8 +124,11 @@ class pure_pursuit :
         # 제어 입력을 위한 Steering 각도를 계산 합니다.
         # theta 는 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 좌표의 각도를 계산 합니다.
         # Steering 각도는 Pure Pursuit 알고리즘의 각도 계산 수식을 적용하여 조향 각도를 계산합니다.
-        theta = 
-        steering = 
+        theta = atan2(local_path_point[1], local_path_point[0])
+        steering = atan2(
+            2 * self.vehicle_length * sin(theta),
+            self.lfd
+        )
 
         return steering
 
