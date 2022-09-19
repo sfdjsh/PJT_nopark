@@ -16,7 +16,6 @@ from lib.mgeo.class_defs import *
 # 1. Mgeo data 읽어온 후 데이터 확인
 
 #TODO: (1) Mgeo data 읽어온 후 데이터 확인
-'''
 # Json 파일 형식으로 저장된 MGeo 데이터를 읽어오는 예제 입니다.
 # VScode 의 debug 기능을 이용하여 MGeo 데이터를 확인 할 수 있습니다.
 # MGeo 데이터는 인접 리스트 방식의 그래프 구조 입니다.
@@ -29,9 +28,6 @@ from lib.mgeo.class_defs import *
 # 각각의 Node Link 정보는 이름인 idx 정보를 가집니다 idx 는 중복 될 수 없습니다. 
 # to_links , from_links , to_node , from_node ... 등 
 # MGeo에 정의되어 있는 데이터를 활용해 각 Node 와 Link 간 연결 성을 나타낼 수 있습니다.
-# 
-
-'''
 load_path = os.path.normpath(os.path.join(current_path, 'lib/mgeo_data/R_KR_PG_K-City'))
 mgeo_planner_map = MGeo.create_instance_from_json(load_path)
 
