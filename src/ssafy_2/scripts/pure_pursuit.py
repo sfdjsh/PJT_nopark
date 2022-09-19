@@ -121,7 +121,6 @@ class pure_pursuit :
             if local_path_point[0] > 0 :
                 dis = sqrt(pow(local_path_point[0], 2) + pow(local_path_point[1], 2))
                 if dis >= self.lfd :
-                    print(dis)
                     self.forward_point = path_point
                     self.is_look_forward_point = True
                     break
