@@ -54,7 +54,7 @@ class pure_pursuit :
         self.current_postion=Point()
 
         self.vehicle_length = 4.3561
-        self.lfd = 1
+        self.lfd = 10
 
         rate = rospy.Rate(30) # 30hz
         while not rospy.is_shutdown():
@@ -101,8 +101,8 @@ class pure_pursuit :
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
         trans_matrix = np.array([
-            [cos(-self.vehicle_yaw), -sin(-self.vehicle_yaw), 0],
-            [sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
+            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), 0],
+            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
             [0, 0, 1]
         ])
 
@@ -121,7 +121,9 @@ class pure_pursuit :
             if local_path_point[0] > 0 :
                 dis = sqrt(pow(local_path_point[0], 2) + pow(local_path_point[1], 2))
                 if dis >= self.lfd :
-                    self.forward_point = path_point
+                    self.forward_point.x = local_path_point[0]
+                    self.forward_point.y = local_path_point[1]
+                    self.forward_point.z = local_path_point[2]
                     self.is_look_forward_point = True
                     break
 
@@ -129,12 +131,12 @@ class pure_pursuit :
         # 제어 입력을 위한 Steering 각도를 계산 합니다.
         # theta 는 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 좌표의 각도를 계산 합니다.
         # Steering 각도는 Pure Pursuit 알고리즘의 각도 계산 수식을 적용하여 조향 각도를 계산합니다.
+
         theta = atan2(self.forward_point.y, self.forward_point.x)
         steering = atan2(
             2 * self.vehicle_length * sin(theta),
             self.lfd
         )
-
         return steering
 
 if __name__ == '__main__':
