@@ -54,7 +54,7 @@ class pure_pursuit :
         self.current_postion=Point()
 
         self.vehicle_length = 4.3561
-        self.lfd = 1
+        self.lfd = 10
 
         rate = rospy.Rate(30) # 30hz
         while not rospy.is_shutdown():
@@ -108,34 +108,35 @@ class pure_pursuit :
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
 
-        # 일단 제 추측으로는 여기에서 수정이 필요할 것 같아요
         for num, i in enumerate(self.path.poses):
-            path_point = {
-                'x': i.pose.position.x,
-                'y': i.pose.position.y,
-                'z': 0.0
-            }
-            global_path_point = [i.pose.position.x - trans_pos[0], i.pose.position.y - trans_pos[1], 1]
-            local_path_point = det_trans_matrix.dot(global_path_point)    
+            path_point = Point()
+            # 여기서 지도를 차에 대해 평행이동한 뒤
+            path_point.x = i.pose.position.x - trans_pos[0]
+            path_point.y = i.pose.position.y - trans_pos[1]
+            path_point.z = 0.0
+            global_path_point = [path_point.x, path_point.y, 1]
+            # 여기서 회전변환만 수행
+            local_path_point = det_trans_matrix.dot(global_path_point)
 
             if local_path_point[0] > 0 :
                 dis = sqrt(pow(local_path_point[0], 2) + pow(local_path_point[1], 2))
                 if dis >= self.lfd :
-                    self.forward_point = path_point
+                    self.forward_point.x = local_path_point[0]
+                    self.forward_point.y = local_path_point[1]
+                    self.forward_point.z = local_path_point[2]
                     self.is_look_forward_point = True
                     break
-        # 여기까지
-        
+
         #TODO: (3) Steering 각도 계산
         # 제어 입력을 위한 Steering 각도를 계산 합니다.
         # theta 는 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 좌표의 각도를 계산 합니다.
         # Steering 각도는 Pure Pursuit 알고리즘의 각도 계산 수식을 적용하여 조향 각도를 계산합니다.
-        theta = atan2(local_path_point[1], local_path_point[0])
+
+        theta = atan2(self.forward_point.y, self.forward_point.x)
         steering = atan2(
             2 * self.vehicle_length * sin(theta),
             self.lfd
         )
-
         return steering
 
 if __name__ == '__main__':
