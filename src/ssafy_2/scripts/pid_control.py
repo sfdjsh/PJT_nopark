@@ -8,7 +8,7 @@ from geometry_msgs.msg import Point,PoseWithCovarianceStamped
 from nav_msgs.msg import Odometry,Path
 from morai_msgs.msg import CtrlCmd,EgoVehicleStatus
 import numpy as np
-import sympy as sym
+import sympy as sy
 import tf
 from tf.transformations import euler_from_quaternion,quaternion_from_euler
 
@@ -83,6 +83,7 @@ class pure_pursuit :
                     self.ctrl_cmd_msg.steering = steering
                 else : 
                     print("no found forward point")
+                    self.ctrl_cmd_msg.brake = 1.0
                     self.ctrl_cmd_msg.steering=0.0
 
                 output = self.pid.pid(self.target_vel, self.status_msg.velocity.x*3.6)
@@ -171,14 +172,15 @@ class pure_pursuit :
 class pidControl:
     def __init__(self):
         self.p_gain = 0.3
-        self.i_gain = 0.00
-        self.d_gain = 0.03
+        self.i_gain = 0.003
+        self.d_gain = 0.3
         self.prev_error = 0
         self.i_control = 0
         self.controlTime = 0.02
 
     def pid(self, target_vel, current_vel):
         error = target_vel - current_vel
+        t = sy.symbols('t')
 
         #TODO: (4) PID 제어 생성
         # 종방향 제어를 위한 PID 제어기는 현재 속도와 목표 속도 간 차이를 측정하여 Accel/Brake 값을 결정 합니다.
@@ -186,11 +188,10 @@ class pidControl:
         # 각 PID Gain 값을 직접 튜닝하고 아래 수식을 채워 넣어 P I D 제어기를 완성하세요.
 
         p_control = self.p_gain * error
-        self.i_control += self.i_gain * 
-        d_control = 
-
-        output = 
-        self.prev_error = 
+        self.i_control += self.i_gain * sy.integrate(error, (t, self.controlTime, 0))
+        d_control = self.d_gain * (error - self.prev_error) / self.controlTime
+        output = p_control + self.i_control + d_control
+        self.prev_error = error
         return output
 
 if __name__ == '__main__':
