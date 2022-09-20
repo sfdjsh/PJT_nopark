@@ -161,8 +161,8 @@ class pure_pursuit :
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
         trans_matrix = np.array([
-            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), 0],
-            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
+            [cos(self.vehicle_yaw), -sin(self.vehicle_yaw), trans_pos[0]],
+            [sin(self.vehicle_yaw), cos(self.vehicle_yaw), trans_pos[1]],
             [0, 0, 1]
         ])
 
@@ -171,10 +171,10 @@ class pure_pursuit :
         for num, i in enumerate(self.path.poses):
             path_point = Point()
             # 여기서 지도를 차에 대해 평행이동한 뒤
-            path_point.x = i.pose.position.x - trans_pos[0]
-            path_point.y = i.pose.position.y - trans_pos[1]
+            path_point.x = i.pose.position.x
+            path_point.y = i.pose.position.y
             path_point.z = 0.0
-            global_path_point = [path_point.x, path_point.y, 1]
+            global_path_point = [[path_point.x], [path_point.y], [1]]
             # 여기서 회전변환만 수행
             local_path_point = det_trans_matrix.dot(global_path_point)
 
