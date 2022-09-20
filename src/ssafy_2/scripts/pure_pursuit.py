@@ -101,8 +101,8 @@ class pure_pursuit :
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
         trans_matrix = np.array([
-            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), 0],
-            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
+            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), -1],
+            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), -1],
             [0, 0, 1]
         ])
 
