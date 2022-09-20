@@ -66,7 +66,7 @@ class pure_pursuit :
         rospy.Subscriber("/local_path", Path, self.path_callback)
         rospy.Subscriber("/odom", Odometry, self.odom_callback)
         rospy.Subscriber("/Ego_topic", EgoVehicleStatus, self.status_callback)
-        self.ctrl_cmd_pub = rospy.Publisher("/ctrl_msg", CtrlCmd, queue_size=1)
+        self.ctrl_cmd_pub = rospy.Publisher("/ctrl_cmd", CtrlCmd, queue_size=1)
 
         self.ctrl_cmd_msg=CtrlCmd()
         self.ctrl_cmd_msg.longlCmdType=1
@@ -81,8 +81,8 @@ class pure_pursuit :
         self.forward_point = Point()
         self.current_postion = Point()
 
-        self.vehicle_length = 1
-        self.lfd = 5
+        self.vehicle_length = 4.3561
+        self.lfd = 10
         self.target_velocity = 60
 
         self.pid = pidControl()
@@ -109,6 +109,8 @@ class pure_pursuit :
                     self.ctrl_cmd_msg.steering = steering
                 else : 
                     print("no found forward point")
+                    self.ctrl_cmd_msg.accel = 0.0
+                    self.ctrl_cmd_msg.brake = 1.0
                     self.ctrl_cmd_msg.steering = 0.0
 
                 output = self.pid.pid(self.target_velocity,self.status_msg.velocity.x*3.6)
@@ -251,30 +253,26 @@ class velocityPlanning:
             x_list = []
             y_list = []
             for box in range(-point_num, point_num):
-                x = gloabl_path.poses[i+box].pose.position.x
-                y = gloabl_path.poses[i+box].pose.position.y
+                x = gloabl_path.poses[i + box].pose.position.x
+                y = gloabl_path.poses[i + box].pose.position.y
                 x_list.append([-2*x, -2*y ,1])
                 y_list.append((-x*x) - (y*y))
 
             #TODO: (5) 도로의 곡률 계산
-            '''
             # 도로의 곡률 반경을 계산하기 위한 수식입니다.
             # Path 데이터의 좌표를 이용해서 곡선의 곡률을 구하기 위한 수식을 작성합니다.
             # 원의 좌표를 구하는 행렬 계산식, 최소 자승법을 이용하는 방식 등 곡률 반지름을 구하기 위한 식을 적용 합니다.
             # 적용한 수식을 통해 곡률 반지름 "r" 을 계산합니다.
-
-            r = 
-
-            '''
+            x_trans = np.transpose(x_list)
+            target_list = np.linalg.inv(x_trans.dot(x_list)).dot(x_trans).dot(y_list)
+            r = sqrt(target_list[0]**2 + target_list[1]**2 - target_list[2])
 
             #TODO: (6) 곡률 기반 속도 계획
-            '''
             # 계산 한 곡률 반경을 이용하여 최고 속도를 계산합니다.
             # 평평한 도로인 경우 최대 속도를 계산합니다. 
             # 곡률 반경 x 중력가속도 x 도로의 마찰 계수 계산 값의 제곱근이 됩니다.
-            v_max = 
+            v_max = sqrt(r * 9.8 * self.road_friction)
 
-            '''
             if v_max > self.car_max_speed:
                 v_max = self.car_max_speed
 
