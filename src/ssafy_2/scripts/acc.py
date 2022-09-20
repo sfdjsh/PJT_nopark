@@ -251,12 +251,10 @@ class pure_pursuit :
 
         for num, i in enumerate(self.path.poses):
             path_point = Point()
-            # 여기서 지도를 차에 대해 평행이동한 뒤
             path_point.x = i.pose.position.x - trans_pos[0]
             path_point.y = i.pose.position.y - trans_pos[1]
             path_point.z = 0.0
-            global_path_point = [path_point.x, path_point.y, 1]
-            # 여기서 회전변환만 수행
+            global_path_point = [[path_point.x], [path_point.y], [1]]
             local_path_point = det_trans_matrix.dot(global_path_point)
 
             if local_path_point[0] > 0 :
@@ -385,21 +383,30 @@ class AdaptiveCruiseControl:
             for i in range(len(global_ped_info)):
                 for path in ref_path.poses :
                     if global_ped_info[i][0] == 0 : # type=0 [pedestrian] 
-                        dis = 
+                        dis = sqrt(
+                            local_ped_info[i][1]**2 + local_ped_info[i][2]**2
+                        )
+                        print(dis)
                         if dis<2.35:
-                            rel_distance = 
+                            rel_distance = sqrt(
+                                local_ped_info[i][1]**2 + local_ped_info[i][2]**2
+                            )
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
                                 self.Person=[True, i]
 
         # 주행 경로 상 NPC 차량 유무 파악
-        if len(global_npc_info) > 0 :            
+        if len(global_npc_info) > 0 :
             for i in range(len(global_npc_info)):
                 for path in ref_path.poses :      
                     if global_npc_info[i][0] == 1 : # type=1 [npc_vehicle] 
-                        dis = 
+                        dis = sqrt(
+                            local_npc_info[i][1]**2 + local_npc_info[i][2]**2
+                        )
                         if dis<2.35:
-                            rel_distance = 
+                            rel_distance = sqrt(
+                                local_npc_info[i][1]**2 + local_npc_info[i][2]**2
+                            )
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
                                 self.npc_vehicle=[True, i]
@@ -413,9 +420,13 @@ class AdaptiveCruiseControl:
             for i in range(len(global_obs_info)):
                 for path in ref_path.poses :      
                     if global_obs_info[i][0] == 2 : # type=1 [obstacle] 
-                        dis = 
+                        dis = sqrt(
+                            local_obs_info[i][1]**2 + local_obs_info[i][2]**2
+                        )
                         if dis<2.35:
-                            rel_distance = 
+                            rel_distance = sqrt(
+                                local_obs_info[i][1]**2 + local_obs_info[i][2]**2
+                            )
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
                                 self.object=[True, i] 
