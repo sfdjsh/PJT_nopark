@@ -67,15 +67,14 @@ class pure_pursuit :
         self.forward_point = Point()
         self.current_postion = Point()
 
-        self.vehicle_length = 2.6
-        self.lfd = 8
-        self.min_lfd=5
-        self.max_lfd=30
-        self.lfd_gain = 0.78
+        self.vehicle_length = 4.3561
         self.target_velocity = 60
+        self.min_lfd = 5
+        self.max_lfd = 30
+        self.lfd_gain = 0.93
 
         self.pid = pidControl()
-        self.adaptive_cruise_control = AdaptiveCruiseControl(velocity_gain = 0.5, distance_gain = 1, time_gap = 0.8, vehicle_length = 2.7)
+        self.adaptive_cruise_control = AdaptiveCruiseControl(velocity_gain = 0.5, distance_gain = 1, time_gap = 0.8, vehicle_length = 4.3561)
         self.vel_planning = velocityPlanning(self.target_velocity/3.6, 0.15)
 
         while True:
@@ -87,8 +86,10 @@ class pure_pursuit :
 
         rate = rospy.Rate(30) # 30hz
         while not rospy.is_shutdown():
-
             if self.is_path == True and self.is_odom == True and self.is_status == True:
+                self.lfd = self.lfd_gain * self.status_msg.velocity.x
+                if self.lfd >= 30: self.lfd = self.max_lfd
+                elif self.lfd <= 5: self.lfd = self.min_lfd
 
                 # global_obj,local_obj
                 result = self.calc_vaild_obj([self.current_postion.x,self.current_postion.y,self.vehicle_yaw],self.object_data)
@@ -108,6 +109,8 @@ class pure_pursuit :
                     self.ctrl_cmd_msg.steering = steering
                 else : 
                     rospy.loginfo("no found forward point")
+                    self.ctrl_cmd_msg.accel = 0.0
+                    self.ctrl_cmd_msg.brake = 1.0
                     self.ctrl_cmd_msg.steering=0.0
 
                 self.adaptive_cruise_control.check_object(self.path ,global_npc_info, local_npc_info
@@ -198,7 +201,7 @@ class pure_pursuit :
                                 [tmp_t[0][1], tmp_t[1][1], -(tmp_t[0][1] * tmp_translation[0] + tmp_t[1][1]*tmp_translation[1])],
                                 [0,0,1]])
 
-            #npc vehicle ranslation        
+            #npc vehicle translation        
             for npc_list in self.all_object.npc_list:
                 global_result=np.array([[npc_list.position.x],[npc_list.position.y],[1]])
                 local_result=tmp_det_t.dot(global_result)
@@ -366,8 +369,8 @@ class AdaptiveCruiseControl:
     def check_object(self,ref_path, global_npc_info, local_npc_info, 
                                     global_ped_info, local_ped_info, 
                                     global_obs_info, local_obs_info):
+
         #TODO: (8) 경로상의 장애물 유무 확인 (차량, 사람, 정지선 신호)
-        '''
         # 주행 경로 상의 장애물의 유무를 파악합니다.
         # 장애물이 한개 이상 있다면 self.object 변수의 첫번째 값을 True 로 둡니다.
         # 장애물의 대한 정보는 List 형식으로 self.object 변수의 두번째 값으로 둡니다.
@@ -376,25 +379,19 @@ class AdaptiveCruiseControl:
         # 경로를 기준으로 2.5 m 안쪽에 있다면 주행 경로 내 장애물이 있다고 판단 합니다.
         # 주행 경로 상 장애물이 여러게 있는 경우 가장 가까이 있는 장애물 정보를 가지도록 합니다.
 
-        '''
-
-        '''
         # 주행 경로 상 보행자 유무 파악
         min_rel_distance=float('inf')
         if len(global_ped_info) > 0 :        
             for i in range(len(global_ped_info)):
-                for path in ref_path.poses :      
-                    if global_ped_info[i][0] == 0 : # type=0 [pedestrian]                    
+                for path in ref_path.poses :
+                    if global_ped_info[i][0] == 0 : # type=0 [pedestrian] 
                         dis = 
-                        if dis<2.35:                            
+                        if dis<2.35:
                             rel_distance = 
                             if rel_distance < min_rel_distance:
-                                min_rel_distance = 
-                                self.Person=[True,i]
+                                min_rel_distance = rel_distance
+                                self.Person=[True, i]
 
-        '''
-
-        '''
         # 주행 경로 상 NPC 차량 유무 파악
         if len(global_npc_info) > 0 :            
             for i in range(len(global_npc_info)):
@@ -402,14 +399,11 @@ class AdaptiveCruiseControl:
                     if global_npc_info[i][0] == 1 : # type=1 [npc_vehicle] 
                         dis = 
                         if dis<2.35:
-                            rel_distance =        
+                            rel_distance = 
                             if rel_distance < min_rel_distance:
-                                min_rel_distance = 
-                                self.npc_vehicle=[True,i]
+                                min_rel_distance = rel_distance
+                                self.npc_vehicle=[True, i]
         
-        '''
-
-        '''
         # 주행 경로 상 Obstacle 유무 파악
         # acc 예제는 주행 중 전방에 차량에 속도에 맞춰 움직이도록 하는 Cruise Control
         # 예제 이기 때문에 정적 장애물(Obstacle) 의 정보는 받지 않는게 좋습니다.
@@ -421,13 +415,11 @@ class AdaptiveCruiseControl:
                     if global_obs_info[i][0] == 2 : # type=1 [obstacle] 
                         dis = 
                         if dis<2.35:
-                            rel_distance=                
+                            rel_distance = 
                             if rel_distance < min_rel_distance:
-                                min_rel_distance = 
-                                # self.object=[True,i] 
+                                min_rel_distance = rel_distance
+                                self.object=[True, i] 
         
-        '''
-
     def get_target_velocity(self, local_npc_info, local_ped_info, local_obs_info, ego_vel, target_vel): 
         #TODO: (9) 장애물과의 속도와 거리 차이를 이용하여 ACC 를 진행 목표 속도를 설정
         out_vel =  target_vel
