@@ -6,5 +6,5 @@
     <node pkg="ssafy_2" type="tf_pub.py" name="tf"  />
     <!-- <node pkg="ssafy_2" type="acc.py" name="ACC"  /> -->
 
-    <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ssafy_2)/rviz/kcity_rviz.rviz" /> -->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ssafy_2)/rviz/kcity_rviz.rviz" />
 </launch>
