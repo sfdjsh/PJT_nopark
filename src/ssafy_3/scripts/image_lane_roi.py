@@ -22,14 +22,11 @@ class IMGParser:
         y = 480
 
         #TODO: (1) 관심있는 영역만 지정.
-        '''
-        4개의 포인트를 지정
-        이미지의 좌표를 직접 지정해도 되고,
-        이미지의 비율로 정의해도 됩니다.
-        np.array 사용
-        self.crop_pts =
-
-        '''
+        # 4개의 포인트를 지정
+        # 이미지의 좌표를 직접 지정해도 되고,
+        # 이미지의 비율로 정의해도 됩니다.
+        # np.array 사용
+        self.crop_pts = np.array([x, y])
 
     def callback(self, msg):
         # uint8 : unsined integer 0~255 로 만들기 위함입니다.
@@ -75,26 +72,19 @@ class IMGParser:
         #이를 이용하는 방법을 찾아야 합니다.
         
         #TODO: (2) 
-        '''
-        먼저 원하는 만큼의 좌표 점들을 선으로 긋고, 시작점과 끝점을 자동으로 연결하여 다각형을 그리는 함수를 opencv 함수를
-        찾습니다.
+        # 먼저 원하는 만큼의 좌표 점들을 선으로 긋고, 시작점과 끝점을 자동으로 연결하여 다각형을 그리는 함수를 opencv 함수를
+        # 찾습니다.
         cv2.
-        '''
 
         #TODO : (3)
-        '''
         # 다음으로 RGB 이미지를 마스킹 하는 opencv 함수를 이용합니다. 비트연산을 하는 함수이며, 0,1을 이용하는 연산으로
-        두 이미지의 동일한 위치에 대한 연산을 진행합니다.
+        # 두 이미지의 동일한 위치에 대한 연산을 진행합니다.
         mask = cv2.
-        '''
         
         return mask
 
 
 if __name__ == '__main__':
-
     rospy.init_node('image_parser', anonymous=True)
-
     image_parser = IMGParser()
-
     rospy.spin() 
