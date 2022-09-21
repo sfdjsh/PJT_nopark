@@ -384,7 +384,7 @@ class AdaptiveCruiseControl:
         if len(global_ped_info) > 0 :        
             for i in range(len(global_ped_info)):
                 for path in ref_path.poses :
-                    if global_ped_info[i][0] == 0 : # type=0 [pedestrian] 
+                    if global_ped_info[i][0] == 0 : # type=0 [pedestrian]
                         dis = sqrt(
                             local_ped_info[i][1]**2 + local_ped_info[i][2]**2
                         ) - self.vehicle_length
@@ -400,12 +400,18 @@ class AdaptiveCruiseControl:
         if len(global_npc_info) > 0 :
             for i in range(len(global_npc_info)):
                 for path in ref_path.poses :      
-                    if global_npc_info[i][0] == 1 : # type=1 [npc_vehicle] 
+                    if global_npc_info[i][0] == 1 : # type=1 [npc_vehicle]
                         dis = sqrt(
-                            local_npc_info[i][1]**2 + local_npc_info[i][2]**2
-                        ) - self.vehicle_length
-                        if dis < 4:
-                            rel_distance = dis
+                            (path.pose.position.x - local_npc_info[i][1])**2 +
+                            (path.pose.position.y - local_npc_info[i][2])**2
+                        )
+
+                        if dis < 4.0:
+                            print(dis)
+                            rel_distance = sqrt(
+                                abs(local_npc_info[i][1])**2 +
+                                abs(local_npc_info[i][2])**2
+                            )
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
                                 self.npc_vehicle=[True, i]
