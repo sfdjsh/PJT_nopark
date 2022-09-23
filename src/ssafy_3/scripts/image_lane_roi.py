@@ -47,23 +47,18 @@ class IMGParser:
         cv2.waitKey(1)
 
     def mask_roi(self, img):
-
         h = img.shape[0]
         w = img.shape[1]
         
         # img.shape == [H,W,C]의 3차원이고 C RGB를 갖는 3채널입니다. RGB 이미지 입니다.
         if len(img.shape)==3:
-
             c = img.shape[2]
             mask = np.zeros((h, w, c), dtype=np.uint8)
-
             mask_value = (255, 255, 255)
 
         # grayscale image일 경우. (시뮬레이터에서 주는 이미지는 항상 3차원이기 때문에 예외를 위해서 만들어 놓은 부분 입니다.)
         else:
-
             mask = np.zeros((h, w), dtype=np.uint8)
-
             mask_value = (255)
         
         # TODO (1) 에서 마스킹 영역을 만들었고, 관심 있는 부분만을 이미지 원본으로 하고 나머지는 255(검은색)로 반환 해 주는
@@ -74,14 +69,16 @@ class IMGParser:
         #TODO: (2) 
         # 먼저 원하는 만큼의 좌표 점들을 선으로 긋고, 시작점과 끝점을 자동으로 연결하여 다각형을 그리는 함수를 opencv 함수를
         # 찾습니다.
-        cv2.
+        points = np.array([[0, 368], [285, 252], [355, 252], [640, 368]])
+        cv2.fillPoly(mask, [points], mask_value, 1)
 
         #TODO : (3)
         # 다음으로 RGB 이미지를 마스킹 하는 opencv 함수를 이용합니다. 비트연산을 하는 함수이며, 0,1을 이용하는 연산으로
         # 두 이미지의 동일한 위치에 대한 연산을 진행합니다.
-        mask = cv2.
-        
+        mask = cv2.bitwise_and(img, mask)
         return mask
+
+    
 
 
 if __name__ == '__main__':

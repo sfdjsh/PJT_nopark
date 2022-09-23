@@ -21,18 +21,13 @@ from cv_bridge import CvBridgeError
 # 4. 원근 맵 행렬에 대한 기하학적 변환
 
 def warp_image(img, source_prop):
-    
     image_size = (img.shape[1], img.shape[0])
-
     x = img.shape[1]
     y = img.shape[0]
     
     #TODO: (2) 원본 이미지 내 Warping 영역과 매칭 될 목적지 지점 정의
-    '''
     destination_points = np.float32(
-    
     source_points = source_prop * np.float32([[x, y]]* 4)
-    '''
     
     # 이미지를 기하학적 변환을 해야합니다. 이미지를 인위적으로 확대, 축소, 위치 변경, 회전,
     # 왜곡을 하는 것으로 BEV는 원근이 있는 이미지를 원근을 없애는 작업을 해야합니다.
@@ -40,15 +35,10 @@ def warp_image(img, source_prop):
     # 우리는 원근 변환이라는 OpenCV를 사용합니다.
 
     #TODO: (3) 원근 맵 행렬 생성 함수를 이용하여 매핑 좌표에 대한 원근 맵 행렬을 생성합니다.
-    '''
     perspective_transform = cv2.
 
-    '''
     #TODO: (4) 이후 원근 맵 행렬에 대한 기하학적 변환을 진행합니다.
-    '''
     warped_img = cv2.
-
-    '''
 
     return warped_img
 
@@ -60,10 +50,8 @@ class IMGParser:
         self.img_bgr = None
 
         #TODO: (1) 이미지 warping 영역 지정
-        '''
-        Bird's eye view 를 하기 위한 영역을 지정해야 합니다. 이지미 warping을 위해 영역을 비율로 만들어줘야 합니다.
+        # Bird's eye view 를 하기 위한 영역을 지정해야 합니다. 이지미 warping을 위해 영역을 비율로 만들어줘야 합니다.
         self.source_prop = np.float32(
-        '''
 
     def callback(self, msg):
         try:
@@ -74,21 +62,15 @@ class IMGParser:
 
         #TODO: (2-0) 이미지 Warping 시작
         img_warp = warp_image(self.img_bgr, self.source_prop)
-
         img_concat = np.concatenate([self.img_bgr, img_warp], axis=1)
-
         cv2.imshow("Image window", img_concat)
         cv2.waitKey(1) 
 
 
 def main():
-
     rospy.init_node('lane_birdview', anonymous=True)
-
     image_parser = IMGParser()
-
     rospy.spin()
 
 if __name__ == '__main__':
-    
     main()

@@ -74,7 +74,10 @@ class pure_pursuit :
         self.lfd_gain = 0.9
 
         self.pid = pidControl()
-        self.adaptive_cruise_control = AdaptiveCruiseControl(velocity_gain = 0.5, distance_gain = 1, time_gap = 0.8, vehicle_length = 4.3561)
+        self.adaptive_cruise_control = AdaptiveCruiseControl(
+            velocity_gain = 0.5, distance_gain = 1,
+            time_gap = 0.8, vehicle_length = 4.3561
+        )
         self.vel_planning = velocityPlanning(self.target_velocity/3.6, 0.15)
 
         while True:
@@ -299,7 +302,7 @@ class pidControl:
         # 각 PID Gain 값을 직접 튜닝하고 아래 수식을 채워 넣어 P I D 제어기를 완성하세요.
 
         p_control = self.p_gain * error
-        self.i_control += self.i_gain * sy.integrate(error, (t, self.controlTime, 0))
+        self.i_control = self.i_gain * sy.integrate(error, (t, self.controlTime, 0))
         d_control = self.d_gain * (error - self.prev_error) / self.controlTime
         output = p_control + self.i_control + d_control
         self.prev_error = error
@@ -402,15 +405,14 @@ class AdaptiveCruiseControl:
                 for path in ref_path.poses :      
                     if global_npc_info[i][0] == 1 : # type=1 [npc_vehicle]
                         dis = sqrt(
-                            (path.pose.position.x - local_npc_info[i][1])**2 +
-                            (path.pose.position.y - local_npc_info[i][2])**2
-                        )
+                            abs(local_npc_info[i][1])**2 +
+                            abs(local_npc_info[i][2])**2
+                        ) - self.vehicle_length
 
                         if dis < 4.0:
-                            print(dis)
                             rel_distance = sqrt(
-                                abs(local_npc_info[i][1])**2 +
-                                abs(local_npc_info[i][2])**2
+                                (self.ego_pos.x - local_npc_info[i][1])**2 +
+                                (self.ego_pos.y - local_npc_info[i][2])**2
                             )
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
