@@ -4,6 +4,7 @@
 ## Team Member & Role
 ![TeamMember](./개발현황/image_src/TeamMember.png)
 <br>
+<br>
 
 ## Production for 09/26
 ### 1. [진행 상황(시연)](https://inquisitive-warrior-3ad.notion.site/09-26-88de98b0ed9d4791b422a7f2a202b203)
