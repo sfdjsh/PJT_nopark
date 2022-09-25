@@ -354,10 +354,10 @@ class lc_path_pub :
         # 위에 예시로 작성한 3차 방정식을 아래 예제에 작성 한다.
 
         # 여기 부분 부터
-        d = (x_end - y_end)*x_start**2*(x_start-3*y_start)/(x_start-y_start)**3
-        c = (6*x_start*y_start*(x_end - y_end))/(x_start-y_start)**3
-        b = (-3*(x_start+y_start)*(x_end - y_end)) / (x_start - y_start)**3
-        a = 2*(x_end - y_end)/(x_start - y_start)**3
+        a = 2*(y_end - y_start)/(x_start - x_end)**3
+        b = (-3*(x_start + x_end)*(y_end - y_start)) / (x_start - x_end)**3
+        c = (6*(y_end - y_start)*x_start*x_end)/(x_start - x_end)**3
+        d = (y_start + x_start**2 * (y_end - y_start)*(x_start - 3*x_end)) / (x_start - x_end)**3
         # 여기 부분 까지 수정 필요
 
         for i in waypoints_x:
