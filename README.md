@@ -16,3 +16,6 @@
 
 ## Work Place
 ### 1. [Notion](https://go-to-the-mars.notion.site/1d2471dd5a1f44b9b4c3bc9d5484f22f)
+
+## Video
+![Video](./개발현황/video_src/차선이탈방지(제어).mp4)
