@@ -26,7 +26,7 @@ def warp_image(img, source_prop):
     y = img.shape[0]
     
     #TODO: (2) 원본 이미지 내 Warping 영역과 매칭 될 목적지 지점 정의
-    destination_points = np.float32(
+    destination_points = np.float32([[0, y], [0, 0], [x, 0], [x, y]])
     source_points = source_prop * np.float32([[x, y]]* 4)
     
     # 이미지를 기하학적 변환을 해야합니다. 이미지를 인위적으로 확대, 축소, 위치 변경, 회전,
@@ -35,10 +35,10 @@ def warp_image(img, source_prop):
     # 우리는 원근 변환이라는 OpenCV를 사용합니다.
 
     #TODO: (3) 원근 맵 행렬 생성 함수를 이용하여 매핑 좌표에 대한 원근 맵 행렬을 생성합니다.
-    perspective_transform = cv2.
+    perspective_transform = cv2.getPerspectiveTransform(source_points, destination_points)
 
     #TODO: (4) 이후 원근 맵 행렬에 대한 기하학적 변환을 진행합니다.
-    warped_img = cv2.
+    warped_img = cv2.warpPerspective(img, perspective_transform, image_size)
 
     return warped_img
 
@@ -50,8 +50,8 @@ class IMGParser:
         self.img_bgr = None
 
         #TODO: (1) 이미지 warping 영역 지정
-        # Bird's eye view 를 하기 위한 영역을 지정해야 합니다. 이지미 warping을 위해 영역을 비율로 만들어줘야 합니다.
-        self.source_prop = np.float32(
+        # Bird's eye view 를 하기 위한 영역을 지정해야 합니다. 이미지 warping을 위해 영역을 비율로 만들어줘야 합니다.
+        self.source_prop = np.float32([[0, 0.6875], [0.4375, 0.5167], [0.5625, 0.5167], [1, 0.6875]])
 
     def callback(self, msg):
         try:
