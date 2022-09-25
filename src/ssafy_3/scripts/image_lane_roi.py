@@ -69,7 +69,7 @@ class IMGParser:
         #TODO: (2) 
         # 먼저 원하는 만큼의 좌표 점들을 선으로 긋고, 시작점과 끝점을 자동으로 연결하여 다각형을 그리는 함수를 opencv 함수를
         # 찾습니다.
-        points = np.array([[0, 330], [280, 248], [360, 248], [640, 330]])
+        points = np.array([[0, 350], [280, 200], [360, 200], [640, 350]])
         cv2.fillPoly(mask, [points], mask_value, 1)
 
         #TODO : (3)
