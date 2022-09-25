@@ -3,10 +3,13 @@
 
 ## Team Member & Role
 ![TeamMember](./개발현황/image_src/TeamMember.png)
-
 <br>
 
-## Production for Middle evaluation
+## Production for 09/26
+### 1. [진행 상황(시연)](https://inquisitive-warrior-3ad.notion.site/09-26-88de98b0ed9d4791b422a7f2a202b203)
+<br>
+
+## Production for 09/19
 ### 1. [기능명세](https://www.notion.so/go-to-the-mars/b8df94bee36f43daaa529e278a64f8d4?v=7a34cb580f0e43b5aaeb68cf7e2f4d74)
 
 ### 2. [진행 상황(시연)](https://www.notion.so/go-to-the-mars/446c4bcbc9544275a2a2ea49516404bc)
@@ -16,6 +19,3 @@
 
 ## Work Place
 ### 1. [Notion](https://go-to-the-mars.notion.site/1d2471dd5a1f44b9b4c3bc9d5484f22f)
-
-## Video
-![Video](./개발현황/video_src/차선이탈방지(제어).mp4)
