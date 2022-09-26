@@ -58,12 +58,10 @@ class IMGParser:
 
         bev_op = BEVTransform(params_cam=params_cam)
         #TODO: (1) CURVEFit Parameter 입력
-        '''
-        CURVEFit Class의 Parameter를 결정하는 영역입니다.
-        하단의 CURVEFit Class에 대한 정보를 바탕으로 적절한 Parameter를 입력하기 바랍니다.
-
+        # CURVEFit Class의 Parameter를 결정하는 영역입니다.
+        # 하단의 CURVEFit Class에 대한 정보를 바탕으로 적절한 Parameter를 입력하기 바랍니다.
         curve_learner = CURVEFit(order=, lane_width= ,y_margin=, x_range=, min_pts=)
-        '''
+        
         #END
         rate = rospy.Rate(10)
 
