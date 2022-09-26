@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 import math
 from sklearn.cluster import DBSCAN
+from math import cos,sin,pi,sqrt,pow,atan2
 
 from sensor_msgs.msg import PointCloud2, PointCloud
 from nav_msgs.msg import Odometry
@@ -44,52 +45,47 @@ class Cluster_viz:
             if self.is_odom == True and self.cluster_status == True:
 
                 #TODO: (1) 좌표 변환 행렬 생성
-                '''
                 trans_matrix = np.array([
-                                            [       ,       ,       ],
-                                            [       ,       ,       ],
+                                            [cos(-self.vehicle_yaw), -sin(-self.vehicle_yaw), 0],
+                                            [sin(-self.vehicle_yaw), cos(-self.vehicle_yaw),  0],
                                             [0,0,1]])
 
-                '''
                 obj_data=PointCloud()
                 obj_data.header.frame_id='map'
 
                 cluster_obj_data = ObjectStatusList()
-
                 cluster_obj_data.num_of_npcs = len(self.cluster_data.poses)
                 cluster_obj_data.num_of_obstacle = len(self.cluster_data.poses)
+                print(cluster_obj_data.poses)
 
                 for num,i in enumerate(self.cluster_data.poses) :
 
                     #TODO: (2) PointCloud와 ObjectStatus 형식에 맞춘 메시지 데이터 생성
-                    '''
-                    local_result = 
-                    global_result = 
+                    #local_result = 
+                    #global_result = 
 
                     tmp_point=Point32()
-                    tmp_point.x = 
-                    tmp_point.y = 
+                    tmp_point.x = i.pose.position.x
+                    tmp_point.y = i.pose.position.y
                     tmp_point.z = 1.
                     obj_data.points.append(tmp_point)
 
                     cluster_obj_data_npc = ObjectStatus()
                     cluster_obj_data_npc.type = 1
-                    cluster_obj_data_npc.position.x = 
-                    cluster_obj_data_npc.position.y = 
+                    cluster_obj_data_npc.position.x = i.pose.position.x
+                    cluster_obj_data_npc.position.y = i.pose.position.y
                     cluster_obj_data_npc.position.z = 1.
                     cluster_obj_data.npc_list.append(cluster_obj_data_npc)
 
                     cluster_obj_data_obstacle = ObjectStatus()
                     cluster_obj_data_obstacle.type = 2
-                    cluster_obj_data_obstacle.position.x = 
-                    cluster_obj_data_obstacle.position.y = 
+                    cluster_obj_data_obstacle.position.x = i.pose.position.x
+                    cluster_obj_data_obstacle.position.y = i.pose.position.y
                     cluster_obj_data_obstacle.position.z = 1.
                     cluster_obj_data.obstacle_list.append(cluster_obj_data_obstacle)
 
-                    '''
 
                 #TODO: (3) 3. PointCloud와 ObjectStatus 메시지 송신
-
                 self.object_pointcloud_pub.publish(obj_data)
                 self.object_data_pub.publish(cluster_obj_data)
 
@@ -97,12 +93,10 @@ class Cluster_viz:
 
     def callback(self, msg):    
         self.cluster_data = msg
-
         self.cluster_status = True
 
     def status_callback(self,msg): ## Vehicl Status Subscriber 
         self.status_msg=msg    
-
         self.vehicle_yaw = self.status_msg.heading/180*math.pi
         self.vehicle_pos_x = self.status_msg.position.x
         self.vehicle_pos_y = self.status_msg.position.y
@@ -117,9 +111,6 @@ class Cluster_viz:
         self.vehicle_pos_y=msg.pose.pose.position.y
 
 if __name__ == '__main__':
-
     rospy.init_node('velodyne_clustering', anonymous=True)
-
     Cluster_visualazation = Cluster_viz()
-
     rospy.spin() 
