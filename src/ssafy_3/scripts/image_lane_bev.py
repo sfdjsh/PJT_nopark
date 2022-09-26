@@ -51,7 +51,7 @@ class IMGParser:
 
         #TODO: (1) 이미지 warping 영역 지정
         # Bird's eye view 를 하기 위한 영역을 지정해야 합니다. 이미지 warping을 위해 영역을 비율로 만들어줘야 합니다.
-        self.source_prop = np.float32([[0, 0.6875], [0.4375, 0.5167], [0.5625, 0.5167], [1, 0.6875]])
+        self.source_prop = np.float32([[0, 0.7291], [0.4375, 0.4167], [0.5625, 0.4167], [1, 0.7291]])
 
     def callback(self, msg):
         try:
