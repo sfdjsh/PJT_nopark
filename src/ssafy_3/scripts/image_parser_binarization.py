@@ -20,8 +20,8 @@ from cv_bridge import CvBridgeError
 
 class IMGParser:
     def __init__(self):
-
         self.image_sub = rospy.Subscriber("/image_jpeg/compressed", CompressedImage, self.callback)
+        self.name = 'Trackbar'
 
     def callback(self, msg):
         try:
@@ -56,11 +56,13 @@ class IMGParser:
         # 비트 연산을 통해 두 이미지를 합칩니다,
         # or 연산을 통해 흰색과 노란색으로 검출된 모든 영역을 출력합니다.
         img_lane = cv2.bitwise_or(img_wresult, img_yresult)
+        ret, img_binary = cv2.threshold(cv2.cvtColor(img_lane, cv2.COLOR_BGR2GRAY), 122, 255, cv2.THRESH_BINARY)
         img_concat = np.concatenate([img_bgr, img_hsv, img_lane], axis=1)
 
         #TODO: (4)
         # 이미지를 출력 합니다.
         cv2.imshow("Image window", img_concat)
+        if ret: cv2.imshow("binary", img_binary)
         cv2.waitKey(1) 
 
 
