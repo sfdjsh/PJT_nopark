@@ -31,7 +31,7 @@ class local_path_pub :
 
         #TODO: (2) Local Path publisher 선언
         # local Path 데이터를 Publish 하는 변수를 선언한다.
-        self.local_path_pub = rospy.Publisher('/local_path', Path, queue_size=1)
+        self.local_path_pub = rospy.Publisher('/local_path', Path, queue_size=10)
         
         # 초기화
         self.is_odom = False
@@ -41,7 +41,7 @@ class local_path_pub :
         # Local Path 의 크기를 지정한다.
         # 차량이 주행 시 Local Path 의 크기 만큼의 정보를 가지고 주행하게 된다
         # 너무 작지도 크기지도 않은 값을 사용한다 (50 ~ 200)
-        self.local_path_size = 100
+        self.local_path_size = 50
         rate = rospy.Rate(20) # 20hz
         while not rospy.is_shutdown():
             if self.is_odom == True and self.is_path == True:

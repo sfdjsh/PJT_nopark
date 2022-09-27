@@ -25,7 +25,7 @@ class GPSIMUParser:
         rospy.init_node('GPS_IMU_parser', anonymous=True)
         self.gps_sub = rospy.Subscriber("/gps", GPSMessage, self.navsat_callback)
         self.imu_sub = rospy.Subscriber("/imu", Imu, self.imu_callback)
-        self.odom_pub = rospy.Publisher("/odom",Odometry, queue_size=1)
+        self.odom_pub = rospy.Publisher("/odom",Odometry, queue_size=10)
         # 초기화
         self.x, self.y = None, None
         self.is_imu=False
