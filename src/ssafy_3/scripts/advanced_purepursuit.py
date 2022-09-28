@@ -44,14 +44,12 @@ class pure_pursuit :
     def __init__(self):
         rospy.init_node('pure_pursuit', anonymous=True)
 
-        '''
         #TODO: ros Launch File <arg> Tag 
         # ros launch 파일 에는 여러 태그 를 사용 할 수 있지만 
         # 그중 <arg> 태그를 사용하여 변수를 정의 할 수 있습니다.
         # 3 장 에서는 사용하는 Path 정보와 Object 각 예제 별로 다르기 때문에
         # launch 파일의 <arg> 태그를 사용하여 예제에 맞게 변수를 설정합니다.
         
-        '''
         arg = rospy.myargv(argv=sys.argv)
         local_path_name = arg[1]
 
