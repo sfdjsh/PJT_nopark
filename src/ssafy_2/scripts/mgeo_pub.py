@@ -26,8 +26,8 @@ from lib.mgeo.class_defs import *
 class get_mgeo :
     def __init__(self):
         rospy.init_node('test', anonymous=True)
-        self.link_pub = rospy.Publisher('link',PointCloud, queue_size=1)
-        self.node_pub = rospy.Publisher('node',PointCloud, queue_size=1)
+        self.link_pub = rospy.Publisher('link',PointCloud, queue_size=10)
+        self.node_pub = rospy.Publisher('node',PointCloud, queue_size=10)
 
         #TODO: (1) Mgeo data 읽어온 후 데이터 확인
         '''
