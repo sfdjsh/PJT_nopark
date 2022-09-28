@@ -68,9 +68,9 @@ class pure_pursuit :
         self.current_postion = Point()
 
         self.vehicle_length = 4.3561
-        self.target_velocity = 60
-        self.min_lfd = 8
-        self.max_lfd = 30
+        self.target_velocity = 50
+        self.min_lfd = 5
+        self.max_lfd = 20
         self.lfd_gain = 0.9
 
         self.pid = pidControl()
@@ -245,8 +245,8 @@ class pure_pursuit :
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
         trans_matrix = np.array([
-            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), -1],
-            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), -1],
+            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), 0],
+            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
             [0, 0, 1]
         ])
 
@@ -286,7 +286,7 @@ class pure_pursuit :
 class pidControl:
     def __init__(self):
         self.p_gain = 0.5
-        self.i_gain = 0.00003
+        self.i_gain = 0
         self.d_gain = 0.1
         self.prev_error = 0
         self.i_control = 0
