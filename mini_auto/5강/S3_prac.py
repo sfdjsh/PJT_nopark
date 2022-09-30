@@ -3,7 +3,7 @@
 
 import boto3
 
-ACCESS_KEY_ID = 'AKIA2LPAPXE5XYE327MZ' #s3 관련 권한을 가진 IAM계정 정보
+ACCESS_KEY_ID = 'AKIA2LPAPXE5XYE327MZ'  #s3 관련 권한을 가진 IAM계정 정보
 ACCESS_SECRET_KEY = '4z27F0WUnIZi9d7H8zwyW3r//EssztCQqWoxf0tw'
 BUCKET_NAME = 'gotothemars'             # 버킷 이름
 OBJECT_PATH = 'car_picture/card.jpg'    # S3에 올릴 파일 경로
