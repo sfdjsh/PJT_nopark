@@ -67,9 +67,9 @@ class pure_pursuit :
         self.forward_point=Point()
         self.current_postion=Point()
 
-        self.vehicle_length = 1
+        self.vehicle_length = 4.3561
         self.lfd = 10
-        self.target_vel = 60
+        self.target_vel = 50
 
         self.pid = pidControl()
 
@@ -171,9 +171,9 @@ class pure_pursuit :
 
 class pidControl:
     def __init__(self):
-        self.p_gain = 0.3
-        self.i_gain = 0.003
-        self.d_gain = 0.3
+        self.p_gain = 0.5
+        self.i_gain = 0.0
+        self.d_gain = 0.03
         self.prev_error = 0
         self.i_control = 0
         self.controlTime = 0.02
