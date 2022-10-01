@@ -84,7 +84,7 @@ class pure_pursuit :
                 else : 
                     print("no found forward point")
                     self.ctrl_cmd_msg.brake = 1.0
-                    self.ctrl_cmd_msg.steering=0.0
+                    self.ctrl_cmd_msg.steering = 0.0
 
                 output = self.pid.pid(self.target_vel, self.status_msg.velocity.x*3.6)
 

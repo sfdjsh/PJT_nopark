@@ -254,21 +254,17 @@ class pure_pursuit :
         det_trans_matrix = np.linalg.inv(trans_matrix)
 
         for num, i in enumerate(self.path.poses):
-            path_point = Point()
-            # 여기서 지도를 차에 대해 평행이동한 뒤
-            path_point.x = i.pose.position.x - trans_pos[0]
-            path_point.y = i.pose.position.y - trans_pos[1]
-            path_point.z = 0.0
-            global_path_point = [path_point.x, path_point.y, 1]
-            # 여기서 회전변환만 수행
+            path_point = [i.pose.position.x, i.pose.position.y]
+            global_path_point = [path_point[0] - trans_pos[0], path_point[1] - trans_pos[1], 1]
             local_path_point = det_trans_matrix.dot(global_path_point)
 
-            if local_path_point[0] > 0 :
+            if local_path_point[0] > 0:
                 dis = sqrt(pow(local_path_point[0], 2) + pow(local_path_point[1], 2))
-                if dis >= self.lfd :
+                if dis >= self.lfd:
                     self.forward_point.x = local_path_point[0]
                     self.forward_point.y = local_path_point[1]
                     self.forward_point.z = local_path_point[2]
+
                     self.is_look_forward_point = True
                     break
 
@@ -286,26 +282,24 @@ class pure_pursuit :
 
 class pidControl:
     def __init__(self):
-        self.p_gain = 0.5
+        self.p_gain = 0.4
         self.i_gain = 0
-        self.d_gain = 0.1
+        self.d_gain = 0.03
         self.prev_error = 0
         self.i_control = 0
-        self.controlTime = 1.0 / 30.0
+        self.controlTime = 0.02
 
     def pid(self, target_vel, current_vel):
         error = target_vel - current_vel
-        t = sy.symbols('t')
-
+        
         #TODO: (4) PID 제어 생성
         # 종방향 제어를 위한 PID 제어기는 현재 속도와 목표 속도 간 차이를 측정하여 Accel/Brake 값을 결정 합니다.
         # 각 PID 제어를 위한 Gain 값은 "class pidContorl" 에 정의 되어 있습니다.
         # 각 PID Gain 값을 직접 튜닝하고 아래 수식을 채워 넣어 P I D 제어기를 완성하세요.
 
         p_control = self.p_gain * error
-        self.i_control = self.i_gain * sy.integrate(error, (t, self.controlTime, 0))
         d_control = self.d_gain * (error - self.prev_error) / self.controlTime
-        output = p_control + self.i_control + d_control
+        output = p_control + d_control
         self.prev_error = error
         return output
 
