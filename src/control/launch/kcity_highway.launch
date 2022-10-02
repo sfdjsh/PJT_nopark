@@ -4,14 +4,14 @@
     <node pkg="route" type="tf_pub.py" name="tf"  />
 
     <!-- lane change 할 때 -->
-    <node pkg="control" type="highway_lane_change_3.py" name="lane_change" args="/Object_topic" />
-    <node pkg="control" type="object_advanced_purepursuit.py" name="object_advanced_purepursuit" args="/lane_change_path" />
+    <!-- <node pkg="control" type="highway_lane_change_3.py" name="lane_change" args="/Object_topic" />
+    <node pkg="control" type="object_advanced_purepursuit.py" name="object_advanced_purepursuit" args="/lane_change_path" /> -->
 
     <!-- lattice driving할 때 -->
-    <!-- <node pkg="route" type="highway_global_path.py" name="highway_global_path_pub"  />
+    <node pkg="route" type="highway_global_path.py" name="highway_global_path_pub"  />
     <node pkg="route" type="highway_local_path.py" name="highway_local_path_pub" />
-    <node pkg="control" type="lattice_planner.py" name="lattice_planner" output="screen" args="/Object_topic"/>
-    <node pkg="control" type="advanced_purepursuit.py" name="advanced_purepursuit"  args="/lattice_path"/> -->
+    <!-- <node pkg="control" type="lattice_planner.py" name="lattice_planner" output="screen" args="/Object_topic"/> -->
+    <node pkg="control" type="advanced_purepursuit.py" name="advanced_purepursuit"  args="/lattice_path"/>
 
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route)/rviz/lane_detection_rviz.rviz" />
 </launch>
