@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from math import atan2, degrees, sqrt
 import os
 import rospy
 import cv2
@@ -11,25 +12,21 @@ from mysql.connector import Error
 from datetime import datetime
 
 from sensor_msgs.msg import CompressedImage
-from morai_msgs.msg import ObjectStatusList
+from morai_msgs.msg import ObjectStatusList, EgoVehicleStatus
 from cv_bridge import CvBridgeError
 
 class NPCDetector:
     def __init__(self):
-        self.image_sub = rospy.Subscriber(
-            "/image_jpeg/compressed",
-            CompressedImage,
-            self.callback
-        )
-        self.image_sub = rospy.Subscriber(
-            "/image_jpeg/compressed2",
-            CompressedImage,
-            self.callback2
-        )
-        rospy.Subscriber('/Object_topic', ObjectStatusList , self.Object_callback)
+        rospy.Subscriber("/image_jpeg/compressed2", CompressedImage, self.callback2)
+        rospy.Subscriber("/Ego_topic" , EgoVehicleStatus , self.EgoStatus_callback)
+        rospy.Subscriber("/Object_topic", ObjectStatusList , self.Object_callback)
         self.rate = rospy.Rate(20)
         self.home_dir = os.environ.get('HOME')
 
+        self.ego_pos = {
+            'x': 0,
+            'y': 0,
+        }
         self.car_info = {
             'name': '',
             'position': {
@@ -56,17 +53,6 @@ class NPCDetector:
         self.cur = self.connection.cursor()
         self.s3 = boto3.client('s3')
 
-    def callback(self, msg):
-        self.rate.sleep()
-        try:
-            np_arr = np.fromstring(msg.data, np.uint8)
-            img_bgr = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-        except CvBridgeError as e:
-            print(e)
-
-        cv2.imshow("Image window", img_bgr)
-        cv2.waitKey(1) 
-
     def isExistData(self):
         try:
             sql_fetch_blob_query = """
@@ -75,7 +61,7 @@ class NPCDetector:
             insert_tuple = (self.car_info['name'],)
             self.cur.execute(sql_fetch_blob_query, insert_tuple)
             record = self.cur.fetchall()
-            for row in record:
+            for _ in record:
                 return True
             return False
 
@@ -88,11 +74,13 @@ class NPCDetector:
             cnt = 1
             if self.isExistData():
                 tmp_query = """
-                    select prior_cnt from tb_car_illegal where car_num = %s
+                    select (prior_cnt) from tb_car_illegal where car_num = %s
                 """
                 tmp_tuple = (self.car_info['name'],)
-                cnt = int(self.cur.execute(tmp_query, tmp_tuple))
-                cnt += 1
+                self.cur.execute(tmp_query, tmp_tuple)
+                for (prior_cnt,) in self.cur:
+                    cnt = prior_cnt + 1
+                    break
 
                 sql_insert_blob_query = """
                     update tb_car_illegal set time = %s, npc_x = %s, npc_y = %s, prior_cnt = %s where car_num = %s
@@ -119,11 +107,6 @@ class NPCDetector:
         except Error as error:
             print(error)
 
-        # finally:
-        #     if (self.connection.is_connected()):
-        #         self.cur.close()
-        #         self.connection.close()
-        #         print("MySQL closed")
 
     def callback2(self, msg):
         self.rate.sleep()
@@ -133,13 +116,27 @@ class NPCDetector:
         except CvBridgeError as e:
             print(e)
 
+        cv2.imshow("Image window", img_bgr)
+        cv2.waitKey(1) 
+
         # 나와 상대 간 거리, 각도, 신호 여부, 속도, 차선 물었는가?
-        if self.car_info['name'] != '' and self.car_capture_flag == False:
+        pos_x = self.ego_pos['x'] - self.car_info['position']['x']
+        pos_y = self.ego_pos['y'] - self.car_info['position']['y']
+        dist = sqrt(pos_x**2 + pos_y**2)
+        angle = abs(degrees(atan2(pos_y, pos_x)))
+        print(dist, angle)
+
+        if self.car_info['name'] != '' and self.car_capture_flag == False \
+        and 0 <= abs(self.car_info['velocity']['x']) <= 1 \
+        and 0 <= abs(self.car_info['velocity']['y']) <= 1 \
+        and 0 <= dist <= 10 \
+        and 75 <= angle <= 90:
             self.file_path = self.home_dir + '/S07P22C109/car_capture/{}.jpg'.format(self.car_info['name'])
             self.object_path = 'car_picture/{}.jpg'.format(self.car_info['name'])
             cv2.imwrite(self.file_path, img_bgr)
             self.s3.upload_file(self.file_path, self.bucket_name, self.object_path)
             self.sendDataToDB()
+
             self.car_info = {
                 'name': '',
                 'position': {
@@ -151,6 +148,8 @@ class NPCDetector:
                     'y': 0,
                 }
             }
+            self.object_path = ''
+            self.file_path = ''
             self.car_capture_flag = True
 
     def Object_callback(self, data):
@@ -168,7 +167,18 @@ class NPCDetector:
             }
             break
 
+    def EgoStatus_callback(self, data):
+        self.ego_pos = {
+            'x': data.position.x,
+            'y': data.position.y
+        }
+
 if __name__ == '__main__':
-    rospy.init_node('npc_detector', anonymous=True)
-    npc_detector = NPCDetector()
-    rospy.spin() 
+    try:
+        rospy.init_node('npc_detector', anonymous=True)
+        npc_detector = NPCDetector()
+        rospy.spin() 
+    finally:
+        print("MySQL closed")
+        npc_detector.cur.close()
+        npc_detector.connection.close()
