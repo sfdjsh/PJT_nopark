@@ -384,11 +384,13 @@ class AdaptiveCruiseControl:
                 for path in ref_path.poses :
                     if global_ped_info[i][0] == 0 : # type=0 [pedestrian]
                         dis = sqrt(
-                            local_ped_info[i][1]**2 + local_ped_info[i][2]**2
+                            local_ped_info[i][1]**2 +
+                            local_ped_info[i][2]**2
                         ) - self.vehicle_length
-                        if dis<2.35:
+                        if dis < 4.0:
                             rel_distance = sqrt(
-                                local_ped_info[i][1]**2 + local_ped_info[i][2]**2
+                                (self.ego_pos.x - local_ped_info[i][1])**2 +
+                                (self.ego_pos.y - local_ped_info[i][2])**2
                             )
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
@@ -423,11 +425,13 @@ class AdaptiveCruiseControl:
                 for path in ref_path.poses :      
                     if global_obs_info[i][0] == 2 : # type=1 [obstacle] 
                         dis = sqrt(
-                            local_obs_info[i][1]**2 + local_obs_info[i][2]**2
+                            local_obs_info[i][1]**2 +
+                            local_obs_info[i][2]**2
                         ) - self.vehicle_length
-                        if dis<2.35:
+                        if dis < 4.0:
                             rel_distance = sqrt(
-                                local_obs_info[i][1]**2 + local_obs_info[i][2]**2
+                                (self.ego_pos.x - local_obs_info[i][1])**2 +
+                                (self.ego_pos.y - local_obs_info[i][2])**2
                             )
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
