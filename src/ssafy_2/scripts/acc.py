@@ -52,7 +52,7 @@ class pure_pursuit :
         rospy.Subscriber("/odom", Odometry, self.odom_callback)
         rospy.Subscriber("/Ego_topic", EgoVehicleStatus, self.status_callback)
         rospy.Subscriber("/Object_topic", ObjectStatusList, self.object_info_callback)
-        self.ctrl_cmd_pub = rospy.Publisher("/ctrl_cmd", CtrlCmd, queue_size=1)
+        self.ctrl_cmd_pub = rospy.Publisher("/ctrl_cmd", CtrlCmd, queue_size=10)
 
         self.ctrl_cmd_msg = CtrlCmd()
         self.ctrl_cmd_msg.longlCmdType = 1
@@ -68,9 +68,9 @@ class pure_pursuit :
         self.current_postion = Point()
 
         self.vehicle_length = 4.3561
-        self.target_velocity = 60
-        self.min_lfd = 8
-        self.max_lfd = 30
+        self.target_velocity = 50
+        self.min_lfd = 5
+        self.max_lfd = 20
         self.lfd_gain = 0.9
 
         self.pid = pidControl()
@@ -110,6 +110,7 @@ class pure_pursuit :
                 steering = self.calc_pure_pursuit()
                 if self.is_look_forward_point :
                     self.ctrl_cmd_msg.steering = steering
+                    rospy.loginfo(steering)
                 else : 
                     rospy.loginfo("no found forward point")
                     self.ctrl_cmd_msg.accel = 0.0
@@ -245,8 +246,8 @@ class pure_pursuit :
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
         trans_matrix = np.array([
-            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), -1],
-            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), -1],
+            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), 0],
+            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
             [0, 0, 1]
         ])
 
@@ -286,7 +287,7 @@ class pure_pursuit :
 class pidControl:
     def __init__(self):
         self.p_gain = 0.5
-        self.i_gain = 0.00003
+        self.i_gain = 0
         self.d_gain = 0.1
         self.prev_error = 0
         self.i_control = 0
@@ -389,11 +390,13 @@ class AdaptiveCruiseControl:
                 for path in ref_path.poses :
                     if global_ped_info[i][0] == 0 : # type=0 [pedestrian]
                         dis = sqrt(
-                            local_ped_info[i][1]**2 + local_ped_info[i][2]**2
+                            local_ped_info[i][1]**2 +
+                            local_ped_info[i][2]**2
                         ) - self.vehicle_length
-                        if dis<2.35:
+                        if dis < 4.0:
                             rel_distance = sqrt(
-                                local_ped_info[i][1]**2 + local_ped_info[i][2]**2
+                                (self.ego_pos.x - local_ped_info[i][1])**2 +
+                                (self.ego_pos.y - local_ped_info[i][2])**2
                             )
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
@@ -428,11 +431,13 @@ class AdaptiveCruiseControl:
                 for path in ref_path.poses :      
                     if global_obs_info[i][0] == 2 : # type=1 [obstacle] 
                         dis = sqrt(
-                            local_obs_info[i][1]**2 + local_obs_info[i][2]**2
+                            local_obs_info[i][1]**2 +
+                            local_obs_info[i][2]**2
                         ) - self.vehicle_length
-                        if dis<2.35:
+                        if dis < 4.0:
                             rel_distance = sqrt(
-                                local_obs_info[i][1]**2 + local_obs_info[i][2]**2
+                                (self.ego_pos.x - local_obs_info[i][1])**2 +
+                                (self.ego_pos.y - local_obs_info[i][2])**2
                             )
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
