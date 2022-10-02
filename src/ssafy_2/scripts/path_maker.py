@@ -17,7 +17,7 @@ from nav_msgs.msg import Odometry
 # 4. 이전 위치보다 0.5m 이상일 때 위치를 저장
 
 class pathMaker :    
-    def __init__(self, pkg_name = 'ssafy_2', path_name = '/kcity.txt'):
+    def __init__(self, pkg_name = 'ssafy_2', path_name = '/sangam2.txt'):
         rospy.init_node('path_maker', anonymous=True)
         rospy.Subscriber("/odom", Odometry, self.odom_callback)
 

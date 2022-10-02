@@ -24,7 +24,7 @@ def talker():
     # CtrlCmd 라는 Morai ROS 메세지 형식을 사용하여 Topic Publisher 를 완성한다.
     # Topic 이름은 시뮬레이터 Network 연결시 확인 가능하다.
     rospy.init_node('Ego_Control_Command', anonymous=True)
-    cmd_pub = rospy.Publisher('/ctrl_cmd', CtrlCmd, queue_size=1)
+    cmd_pub = rospy.Publisher('/ctrl_cmd', CtrlCmd, queue_size=10)
 
     #TODO: (2) 송신 될 메세지 변수 생성
     # 시뮬레이터로 송신 될 메세지 변수를 만든다.
@@ -38,7 +38,7 @@ def talker():
     ctrl_cmd.longlCmdType = 1
     ctrl_cmd.accel = 1.0
     ctrl_cmd.brake = 0.0
-    ctrl_cmd.steering = 0.3
+    ctrl_cmd.steering = -0.001
     ctrl_cmd.velocity = 0.0
     ctrl_cmd.acceleration = 0.0
 
