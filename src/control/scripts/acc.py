@@ -396,23 +396,17 @@ class AdaptiveCruiseControl:
                                 self.Person=[True, i]
 
         # 주행 경로 상 NPC 차량 유무 파악
-        if len(global_npc_info) > 0 :
+        if len(global_npc_info) > 0 :            
             for i in range(len(global_npc_info)):
                 for path in ref_path.poses :      
-                    if global_npc_info[i][0] == 1 : # type=1 [npc_vehicle]
-                        dis = sqrt(
-                            abs(local_npc_info[i][1])**2 +
-                            abs(local_npc_info[i][2])**2
-                        ) - self.vehicle_length
-
-                        if dis < 4.0:
-                            rel_distance = sqrt(
-                                (self.ego_pos.x - local_npc_info[i][1])**2 +
-                                (self.ego_pos.y - local_npc_info[i][2])**2
-                            )
+                    if global_npc_info[i][0] == 1 : # type=1 [npc_vehicle] 
+                        dis = sqrt(pow(global_npc_info[i][1] - path.pose.position.x, 2) + pow(global_npc_info[i][2]-path.pose.position.y, 2))
+                        if dis<3:
+                            rel_distance = sqrt(pow(local_npc_info[i][1], 2) + pow(local_npc_info[i][2], 2))       
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
-                                self.npc_vehicle=[True, i]
+                                self.npc_vehicle=[True,i]
+                                
         
         # 주행 경로 상 Obstacle 유무 파악
         # acc 예제는 주행 중 전방에 차량에 속도에 맞춰 움직이도록 하는 Cruise Control
