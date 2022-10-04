@@ -96,7 +96,6 @@ class pure_pursuit :
                 steering = self.calc_pure_pursuit()
                 if self.is_look_forward_point :
                     self.ctrl_cmd_msg.steering = steering
-                    rospy.loginfo(steering)
                 else : 
                     rospy.loginfo("no found forward point")
                     self.ctrl_cmd_msg.accel = 0.0
@@ -339,33 +338,36 @@ class AdaptiveCruiseControl:
             for i in range(len(global_ped_info)):
                 for path in ref_path.poses :
                     if global_ped_info[i][0] == 0 : # type=0 [pedestrian]
-                        dis = sqrt(pow(global_npc_info[i][1] - path.pose.position.x, 2) + pow(global_npc_info[i][2]-path.pose.position.y, 2))
+                        dis = sqrt(pow(global_ped_info[i][1] - path.pose.position.x, 2) + pow(global_ped_info[i][2]-path.pose.position.y, 2))
                         if dis<2.35:
-                            rel_distance = sqrt(pow(local_npc_info[i][1], 2) + pow(local_npc_info[i][2], 2))       
+                            rel_distance = sqrt(pow(local_ped_info[i][1], 2) + pow(local_ped_info[i][2], 2))       
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
-                                self.npc_vehicle=[True,i]
+                                self.Person=[True,i]
 
         # 주행 경로 상 NPC 차량 유무 파악
         if len(global_npc_info) > 0 :            
             for i in range(len(global_npc_info)):
                 for path in ref_path.poses :      
                     if global_npc_info[i][0] == 1 : # type=1 [npc_vehicle] 
-                        dis = sqrt(pow(global_npc_info[i][1] - path.pose.position.x, 2) + pow(global_npc_info[i][2]-path.pose.position.y, 2))
-                        if dis < 3.5:
-                            rel_distance = sqrt(pow(local_npc_info[i][1], 2) + pow(local_npc_info[i][2], 2))       
+                        dis = sqrt(pow(global_npc_info[i][1] - path.pose.position.x, 2) + pow(global_npc_info[i][2]-path.pose.position.y, 2))  
+                        if dis < 5:
+                            # npc 차량 각도
+                            rel_distance = sqrt(pow(local_npc_info[i][1], 2) + pow(local_npc_info[i][2], 2))   
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
                                 self.npc_vehicle=[True,i]
+
                                 
         # 주행 경로 상 Obstacle 유무 파악
         if len(global_obs_info) > 0 :            
             for i in range(len(global_obs_info)):
                 for path in ref_path.poses :      
                     if global_obs_info[i][0] == 2 : # type=1 [obstacle] 
-                        dis = sqrt(pow(global_npc_info[i][1] - path.pose.position.x, 2) + pow(global_npc_info[i][2]-path.pose.position.y, 2))
+                        dis = sqrt(pow(global_obs_info[i][1] - path.pose.position.x, 2) + pow(global_obs_info[i][2]-path.pose.position.y, 2))
+                        # 각도 추가
                         if dis<2.35:
-                            rel_distance = sqrt(pow(local_npc_info[i][1], 2) + pow(local_npc_info[i][2], 2))   
+                            rel_distance = sqrt(pow(local_obs_info[i][1], 2) + pow(local_obs_info[i][2], 2))   
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
                                 self.object=[True, i] 
@@ -378,8 +380,7 @@ class AdaptiveCruiseControl:
         v_gain = self.velocity_gain
         x_errgain = self.distance_gain
 
-        if self.npc_vehicle[0] and len(local_npc_info) != 0: #ACC ON_vehicle   
-            print("ACC ON NPC_Vehicle")         
+        if self.npc_vehicle[0] and len(local_npc_info) != 0: #ACC ON_vehicle          
             front_vehicle = [local_npc_info[self.npc_vehicle[1]][1], local_npc_info[self.npc_vehicle[1]][2], local_npc_info[self.npc_vehicle[1]][3]]
             
             dis_safe = ego_vel * time_gap + default_space
@@ -390,7 +391,6 @@ class AdaptiveCruiseControl:
             out_vel = ego_vel + acceleration      
 
         if self.Person[0] and len(local_ped_info) != 0: #ACC ON_Pedestrian
-            print("ACC ON Pedestrian")
             Pedestrian = [local_ped_info[self.Person[1]][1], local_ped_info[self.Person[1]][2], local_ped_info[self.Person[1]][3]]
             
             dis_safe = ego_vel* time_gap + default_space
@@ -400,8 +400,7 @@ class AdaptiveCruiseControl:
 
             out_vel = ego_vel + acceleration
    
-        if self.object[0] and len(local_obs_info) != 0: #ACC ON_obstacle     
-            print("ACC ON Obstacle")                    
+        if self.object[0] and len(local_obs_info) != 0: #ACC ON_obstacle                      
             Obstacle = [local_obs_info[self.object[1]][1], local_obs_info[self.object[1]][2], local_obs_info[self.object[1]][3]]
             
             dis_safe = ego_vel* time_gap + default_space
