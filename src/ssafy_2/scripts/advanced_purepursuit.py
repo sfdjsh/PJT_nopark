@@ -66,10 +66,10 @@ class pure_pursuit :
         self.current_postion = Point()
 
         self.vehicle_length = 4.3561
-        self.target_velocity = 60
+        self.target_velocity = 50
         self.min_lfd = 5
-        self.max_lfd = 30
-        self.lfd_gain = 0.93
+        self.max_lfd = 20
+        self.lfd_gain = 0.9
 
         self.pid = pidControl()
         self.vel_planning = velocityPlanning(self.target_velocity/3.6, 0.15)
@@ -84,8 +84,8 @@ class pure_pursuit :
         while not rospy.is_shutdown():
             if self.is_path == True and self.is_odom == True and self.is_status == True:
                 self.lfd = self.lfd_gain * self.status_msg.velocity.x
-                if self.lfd >= 30: self.lfd = self.max_lfd
-                elif self.lfd < 5: self.lfd = self.min_lfd
+                if self.lfd >= self.max_lfd: self.lfd = self.max_lfd
+                elif self.lfd < self.min_lfd: self.lfd = self.min_lfd
 
                 self.current_waypoint = self.get_current_waypoint(self.status_msg,self.global_path)
                 self.target_velocity = self.velocity_list[self.current_waypoint]*3.6
@@ -161,29 +161,42 @@ class pure_pursuit :
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
 
         trans_matrix = np.array([
-            [cos(self.vehicle_yaw), -sin(self.vehicle_yaw), trans_pos[0]],
-            [sin(self.vehicle_yaw), cos(self.vehicle_yaw), trans_pos[1]],
+            [cos(-self.vehicle_yaw), sin(-self.vehicle_yaw), 0],
+            [-sin(-self.vehicle_yaw), cos(-self.vehicle_yaw), 0],
             [0, 0, 1]
         ])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
 
         for num, i in enumerate(self.path.poses):
-            path_point = Point()
-            # 여기서 지도를 차에 대해 평행이동한 뒤
-            path_point.x = i.pose.position.x
-            path_point.y = i.pose.position.y
-            path_point.z = 0.0
-            global_path_point = [[path_point.x], [path_point.y], [1]]
-            # 여기서 회전변환만 수행
+            # path_point = Point()
+            # # 여기서 지도를 차에 대해 평행이동한 뒤
+            # path_point.x = i.pose.position.x
+            # path_point.y = i.pose.position.y
+            # path_point.z = 0.0
+            # global_path_point = [[path_point.x], [path_point.y], [1]]
+            # # 여기서 회전변환만 수행
+            # local_path_point = det_trans_matrix.dot(global_path_point)
+
+            # if local_path_point[0] > 0 :
+            #     dis = sqrt(pow(local_path_point[0], 2) + pow(local_path_point[1], 2))
+            #     if dis >= self.lfd :
+            #         self.forward_point.x = local_path_point[0]
+            #         self.forward_point.y = local_path_point[1]
+            #         self.forward_point.z = local_path_point[2]
+            #         self.is_look_forward_point = True
+            #         break
+            path_point = [i.pose.position.x, i.pose.position.y]
+            global_path_point = [path_point[0] - trans_pos[0], path_point[1] - trans_pos[1], 1]
             local_path_point = det_trans_matrix.dot(global_path_point)
 
-            if local_path_point[0] > 0 :
+            if local_path_point[0] > 0:
                 dis = sqrt(pow(local_path_point[0], 2) + pow(local_path_point[1], 2))
-                if dis >= self.lfd :
+                if dis >= self.lfd:
                     self.forward_point.x = local_path_point[0]
                     self.forward_point.y = local_path_point[1]
                     self.forward_point.z = local_path_point[2]
+
                     self.is_look_forward_point = True
                     break
 
@@ -201,9 +214,9 @@ class pure_pursuit :
 
 class pidControl:
     def __init__(self):
-        self.p_gain = 0.3
-        self.i_gain = 0.0003
-        self.d_gain = 0.3
+        self.p_gain = 0.5
+        self.i_gain = 0.0
+        self.d_gain = 0.03
         self.prev_error = 0
         self.i_control = 0
         self.controlTime = 0.02
