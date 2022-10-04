@@ -7,7 +7,8 @@
     <!-- <node pkg="route" type="dijkstra_path.py" name="mgeo_dijkstra_path"  /> -->
 
     <!-- npc 차량 정차 -->
-    <node pkg="control" type="acc.py" name="ACC" />
+    <node pkg="control" type="advanced_purepursuit.py" name="advanced_purepursuit"  />
+    <!-- <node pkg="control" type="acc.py" name="ACC" /> -->
     <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route)/rviz/kcity_rviz.rviz" /> -->
 
     <!-- npc 차량 회피 -->

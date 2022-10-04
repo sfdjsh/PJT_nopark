@@ -3,6 +3,7 @@
 
 import rospy
 import rospkg
+import os
 from math import cos,sin,pi,sqrt,pow,atan2
 from geometry_msgs.msg import Point,PoseWithCovarianceStamped
 from nav_msgs.msg import Odometry,Path
