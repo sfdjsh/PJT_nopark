@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from cmath import tan
 import rospy
 import rospkg
-from math import cos,sin,pi,sqrt,pow,atan2
+from math import cos,sin,tan,pi,sqrt,pow,atan2
 from geometry_msgs.msg import Point,PoseWithCovarianceStamped
 from nav_msgs.msg import Odometry,Path
 from morai_msgs.msg import CtrlCmd,EgoVehicleStatus,ObjectStatusList
 import numpy as np
 import sympy as sy
+import os
 import tf
 from tf.transformations import euler_from_quaternion,quaternion_from_euler
 
@@ -350,15 +352,13 @@ class AdaptiveCruiseControl:
             for i in range(len(global_npc_info)):
                 for path in ref_path.poses :      
                     if global_npc_info[i][0] == 1 : # type=1 [npc_vehicle] 
-                        dis = sqrt(pow(global_npc_info[i][1] - path.pose.position.x, 2) + pow(global_npc_info[i][2]-path.pose.position.y, 2))
-                        if dis < 3:
+                        dis = sqrt(pow(global_npc_info[i][1] - path.pose.position.x, 2) + pow(global_npc_info[i][2]-path.pose.position.y, 2))  
+                        if dis < 5:
                             # npc 차량 각도
-                            npc_steering = atan2(local_npc_info[i][2], local_npc_info[i][1])
-                            if -0.001 < npc_steering < 0.001:
-                                rel_distance = sqrt(pow(local_npc_info[i][1], 2) + pow(local_npc_info[i][2], 2))   
-                                if rel_distance < min_rel_distance:
-                                    min_rel_distance = rel_distance
-                                    self.npc_vehicle=[True,i]
+                            rel_distance = sqrt(pow(local_npc_info[i][1], 2) + pow(local_npc_info[i][2], 2))   
+                            if rel_distance < min_rel_distance:
+                                min_rel_distance = rel_distance
+                                self.npc_vehicle=[True,i]
 
                                 
         # 주행 경로 상 Obstacle 유무 파악
