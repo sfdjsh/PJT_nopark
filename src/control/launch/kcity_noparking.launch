@@ -7,12 +7,12 @@
     <!-- <node pkg="route" type="dijkstra_path.py" name="mgeo_dijkstra_path"  /> -->
 
     <!-- npc 차량 정차 -->
-    <!-- <node pkg="control" type="acc.py" name="ACC" /> -->
+    <node pkg="control" type="acc.py" name="ACC" />
     <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route)/rviz/kcity_rviz.rviz" /> -->
 
     <!-- npc 차량 회피 -->
-    <node pkg="control" type="lattice_planner.py" name="lattice_planner" output="screen" args="/Object_topic"/>
+    <!-- <node pkg="control" type="lattice_planner.py" name="lattice_planner" args="/Object_topic"/>
     <node pkg="control" type="object_advanced_purepursuit.py" name="advanced_purepursuit"  args="/lattice_path"/>
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route)/rviz/lane_detection_rviz.rviz" /> -->
 
-    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route)/rviz/lane_detection_rviz.rviz" />
 </launch>

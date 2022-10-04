@@ -87,11 +87,9 @@ class latticePlanner:
         for obstacle in object_data.obstacle_list:
             for path in ref_path.poses:  
                 dis = sqrt((obstacle.position.x-path.pose.position.x)** 2 + (obstacle.position.y - path.pose.position.y)**2)              
-                print(dis)
                 if dis < 5: # 장애물의 좌표값이 지역 경로 상의 좌표값과의 직선거리가 2.35 미만일때 충돌이라 판단.
                     is_crash = True
                     break
-        print(is_crash)
         return is_crash
 
     def collision_check(self, object_data, out_path):
@@ -106,7 +104,8 @@ class latticePlanner:
         selected_lane = -1        
         lane_weight = [3, 2, 1, 1, 2, 3] #reference path 
         
-        for obstacle in object_data.obstacle_list:                        
+        for obstacle in object_data:
+            print(obstacle)                        
             for path_num in range(len(out_path)) :                    
                 for path_pos in out_path[path_num].poses :                                
                     dis = sqrt(pow(obstacle.position.x - path_pos.pose.position.x, 2) + pow(obstacle.position.y - path_pos.pose.position.y, 2))
