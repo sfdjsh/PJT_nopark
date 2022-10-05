@@ -20,7 +20,7 @@ class NPCDetector:
         rospy.Subscriber("/image_jpeg/compressed2", CompressedImage, self.callback2)
         rospy.Subscriber("/Ego_topic" , EgoVehicleStatus , self.EgoStatus_callback)
         rospy.Subscriber("/Object_topic", ObjectStatusList , self.Object_callback)
-        self.rate = rospy.Rate(20)
+        self.rate = rospy.Rate(30)
         self.home_dir = os.environ.get('HOME')
 
         self.ego_pos = {
@@ -129,7 +129,7 @@ class NPCDetector:
         if self.car_info['name'] != '' and self.car_capture_flag == 0 \
         and 0 <= abs(self.car_info['velocity']['x']) <= 1 \
         and 0 <= abs(self.car_info['velocity']['y']) <= 1 \
-        and 5 <= dist <= 6 \
+        and 5 <= dist <= 7 \
         and -180 <= angle <= -120:
             print("진입 완료")
             self.file_path = self.home_dir + '/S07P22C109/car_capture/{}.jpg'.format(self.car_info['name'])
