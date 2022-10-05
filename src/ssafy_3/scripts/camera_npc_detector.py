@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import rospy
@@ -72,11 +72,12 @@ class PEDESDetector:
         #TODO: (2) HOG descitpor 생성
         self.pedes_detector = cv2.HOGDescriptor()
 
-        #TODO: (3) 사전 학습된 SVM 분류기 설정 (for peds)                           
+        #TODO: (3) 사전 학습된 SVM 분류기 설정 (for peds)
         self.pedes_detector.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
     def callback(self, msg):
         self.rate.sleep()
+        cv2.CascadeClassifier()
 
         try:
             #TODO: (4)  이미지 불러오기
