@@ -18,13 +18,13 @@ from nav_msgs.msg import Odometry,Path
 
 
 class global_path_pub :
-    def __init__(self, pkg_name = 'ssafy_2', path_name = '/kcity.txt'):
+    def __init__(self, pkg_name = 'ssafy_2', path_name = '/kcity1.txt'):
         rospy.init_node('global_path_pub', anonymous = True)
 
         #TODO: (1) Global Path publisher 선언 및 Global Path 변수 생성 
         # Global Path 데이터를 Publish 하는 변수와 메세지를 담고있는 변수를 선언한다.
         # 이때 Global Path 는 map 좌표계를 기준으로 생성한다.
-        self.global_path_pub = rospy.Publisher('/global_path', Path, queue_size=1)
+        self.global_path_pub = rospy.Publisher('/global_path', Path, queue_size=10)
         self.global_path_msg = Path()
         self.global_path_msg.header.frame_id = "/map"
 
@@ -46,6 +46,7 @@ class global_path_pub :
             read_pose = PoseStamped()
             read_pose.pose.position.x = float(tmp[0])
             read_pose.pose.position.y = float(tmp[1])
+            read_pose.pose.position.z = float(tmp[2])
             read_pose.pose.orientation.w = 1
             self.global_path_msg.poses.append(read_pose)
         self.f.close()
