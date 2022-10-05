@@ -5,7 +5,7 @@
     <node pkg="route" type="no_parking_local_path.py" name="local_path_pub" />
     <node pkg="route" type="tf_pub.py" name="tf"  />
     <!-- <node pkg="route" type="dijkstra_path.py" name="mgeo_dijkstra_path"  /> -->
-    <node pkg="control" type="acc.py" name="ACC" />
+    <node pkg="control" type="advenced_purepursuit.py" name="pure_pursuit" />
     <!-- <node pkg="camera" type="image_lane_fitting.py" name="image_lane_fitting" /> -->
     <node pkg="camera" type="camera_npc_detector.py" name="npc_detector" />
 
