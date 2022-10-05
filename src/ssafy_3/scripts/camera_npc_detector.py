@@ -21,19 +21,6 @@ class NPCDetector:
         rospy.Subscriber("/Ego_topic" , EgoVehicleStatus , self.EgoStatus_callback)
         rospy.Subscriber("/Object_topic", ObjectStatusList , self.Object_callback)
         self.rate = rospy.Rate(20)
-<<<<<<< HEAD
-
-        #TODO: (2) HOG descitpor 생성
-        self.pedes_detector = cv2.HOGDescriptor()
-
-        #TODO: (3) 사전 학습된 SVM 분류기 설정 (for peds)
-        self.pedes_detector.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
-
-    def callback(self, msg):
-        self.rate.sleep()
-        cv2.CascadeClassifier()
-
-=======
         self.home_dir = os.environ.get('HOME')
 
         self.ego_pos = {
@@ -123,7 +110,6 @@ class NPCDetector:
 
     def callback2(self, msg):
         self.rate.sleep()
->>>>>>> 41f48dc127f77379253886dddab13a80e319b5d7
         try:
             np_arr = np.fromstring(msg.data, np.uint8)
             img_bgr = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
