@@ -7,7 +7,7 @@
     <!-- <node pkg="route" type="dijkstra_path.py" name="mgeo_dijkstra_path"  /> -->
     <node pkg="control" type="advenced_purepursuit.py" name="pure_pursuit" />
     <!-- <node pkg="camera" type="image_lane_fitting.py" name="image_lane_fitting" /> -->
-    <node pkg="camera" type="camera_npc_detector.py" name="npc_detector" />
+    <node pkg="camera" type="camera_npc_detector.py" name="npc_detector" output="screen"/>
 
-    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route)/rviz/kcity_rviz.rviz" />
+    <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route)/rviz/kcity_rviz.rviz" /> -->
 </launch>
