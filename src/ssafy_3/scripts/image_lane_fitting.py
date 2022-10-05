@@ -28,11 +28,8 @@ from morai_msgs.msg import CtrlCmd, EgoVehicleStatus
 
 class IMGParser:
     def __init__(self, pkg_name = 'ssafy_3'):
-
         self.image_sub = rospy.Subscriber("/image_jpeg/compressed", CompressedImage, self.callback)
-
         rospy.Subscriber("odom", Odometry, self.odom_callback)
-
         self.path_pub = rospy.Publisher('/lane_path', Path, queue_size=30)
 
         self.img_bgr = None
@@ -60,46 +57,36 @@ class IMGParser:
         #TODO: (1) CURVEFit Parameter 입력
         # CURVEFit Class의 Parameter를 결정하는 영역입니다.
         # 하단의 CURVEFit Class에 대한 정보를 바탕으로 적절한 Parameter를 입력하기 바랍니다.
-        curve_learner = CURVEFit(order=, lane_width= ,y_margin=, x_range=, min_pts=)
+        curve_learner = CURVEFit(order=100, lane_width=3, y_margin=0.6, x_range=100, min_pts=1)
+        # order 표본 개수(?) sample의 값이면 = max 100
+        # lane_width 차선의 폭 = 3m
+        # y_margin 평균 오차(?) = 차가 한 가운데 있을 때를 가정 우로 0.6m
+        # x_range 실행 횟수(?) = 표본 개수
+        # min_pts = min_samples 원본 데이터에서 무작위로 선택한 최소 샘플 수로 int일 경우 1 이상
         
         #END
         rate = rospy.Rate(10)
-
         while not rospy.is_shutdown():
-
             if self.img_bgr is not None and self.is_status == True:
-
                 img_crop = self.mask_roi(self.img_bgr)
-                
                 img_warp = bev_op.warp_bev_img(img_crop)
-
                 img_lane = self.binarize(img_warp)
-
                 img_f = bev_op.warp_inv_img(img_lane)
-
                 lane_pts = bev_op.recon_lane_pts(img_f)
-
                 x_pred, y_pred_l, y_pred_r = curve_learner.fit_curve(lane_pts)
-                
                 curve_learner.set_vehicle_status(self.status_msg)
-
                 lane_path = curve_learner.write_path_msg(x_pred, y_pred_l, y_pred_r)
-
                 xyl, xyr = bev_op.project_lane2img(x_pred, y_pred_l, y_pred_r)
-
                 img_lane_fit = self.draw_lane_img(img_lane, xyl[:, 0].astype(np.int32),
                                                             xyl[:, 1].astype(np.int32),
                                                             xyr[:, 0].astype(np.int32),
                                                             xyr[:, 1].astype(np.int32))
-
                 self.path_pub.publish(lane_path)
 
                 cv2.imshow("birdview", img_lane_fit)
                 cv2.imshow("img_warp", img_warp)
                 cv2.imshow("origin_img", self.img_bgr)
-
                 cv2.waitKey(1)
-
                 rate.sleep()
 
     def odom_callback(self,msg): ## Vehicl Status Subscriber 
@@ -124,35 +111,24 @@ class IMGParser:
         return self.img_lane
 
     def mask_roi(self, img):
-
         h = img.shape[0]
         w = img.shape[1]
         
         if len(img.shape)==3:
-
             # num of channel = 3
-
             c = img.shape[2]
             mask = np.zeros((h, w, c), dtype=np.uint8)
-
             mask_value = (255, 255, 255)
 
         else:
-    
             # grayscale
-
             c = img.shape[2]
             mask = np.zeros((h, w, c), dtype=np.uint8)
-
             mask_value = (255)
 
         cv2.fillPoly(mask, self.crop_pts, mask_value)
-
         mask = cv2.bitwise_and(mask, img)
-
         return mask
-
-
 
     def draw_lane_img(self, img, leftx, lefty, rightx, righty):
         '''
@@ -196,29 +172,21 @@ class BEVTransform:
 
         self.RT_b2g = np.matmul(np.matmul(self.traslationMtx(xb, 0, zb),    self.rotationMtx(np.deg2rad(-90), 0, 0)),
                                                                             self.rotationMtx(0, 0, np.deg2rad(180)))
-
         self.proj_mtx = self.project2img_mtx(params_cam)
-
         self._build_tf(params_cam)
-
 
     def calc_Xv_Yu(self, U, V):
         Xv = self.h*(np.tan(self.theta)*(1-2*(V-1)/(self.m-1))*np.tan(self.alpha_r)-1)/\
             (-np.tan(self.theta)+(1-2*(V-1)/(self.m-1))*np.tan(self.alpha_r))
-
         Yu = (1-2*(U-1)/(self.n-1))*Xv*np.tan(self.alpha_c)
-
         return Xv, Yu
-
 
     def _build_tf(self, params_cam):
         v = np.array([params_cam["HEIGHT"]*0.5, params_cam["HEIGHT"]]).astype(np.float32)
         u = np.array([0, params_cam["WIDTH"]]).astype(np.float32)
 
         U, V = np.meshgrid(u, v)
-
         Xv, Yu = self.calc_Xv_Yu(U, V)
-
         xyz_g = np.concatenate([Xv.reshape([1,-1]) + params_cam["X"],
                                 Yu.reshape([1,-1]),
                                 np.zeros_like(Yu.reshape([1,-1])),
@@ -238,30 +206,21 @@ class BEVTransform:
 
     def warp_bev_img(self, img):
         img_warp = cv2.warpPerspective(img, self.perspective_tf, (self.width, self.height), flags=cv2.INTER_LINEAR)
-        
         return img_warp
-
     
     def warp_inv_img(self, img_warp):    
         img_f = cv2.warpPerspective(img_warp, self.perspective_inv_tf, (self.width, self.height), flags=cv2.INTER_LINEAR)
-        
         return img_f
-
 
     def recon_lane_pts(self, img):
         if cv2.countNonZero(img) != 0:
-    
             UV_mark = cv2.findNonZero(img).reshape([-1,2])
-
             U, V = UV_mark[:, 0].reshape([-1,1]), UV_mark[:, 1].reshape([-1,1])
-            
             Xv, Yu = self.calc_Xv_Yu(U, V)
-
             xyz_g = np.concatenate([Xv.reshape([1,-1]) + self.x,
                                 Yu.reshape([1,-1]),
                                 np.zeros_like(Yu.reshape([1,-1])),
                                 np.ones_like(Yu.reshape([1,-1]))], axis=0)
-
             xyz_g = xyz_g[:, xyz_g[0,:]>=0]
 
         else:
@@ -319,7 +278,6 @@ class BEVTransform:
                     [0,         0,              1,               z],
                     [0,         0,              0,               1],
                     ])
-        
         return M
 
     def project2img_mtx(self,params_cam):    
@@ -369,7 +327,6 @@ class BEVTransform:
 
 class CURVEFit:    
     def __init__(self, order, alpha, lane_width, y_margin, x_range, dx, min_pts):
-
         self.order = order
         self.lane_width = lane_width
         self.y_margin = y_margin
@@ -380,23 +337,24 @@ class CURVEFit:
         self.lane_path = Path()
         
         #TODO: (2) RANSAC Parameter 입력
-        '''
         # RANSAC Parameter를 결정하는 영역입니다.
         # RANSAC의 개념 및 아래 링크를 참고하여 적절한 Parameter를 입력하기 바랍니다.
         # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RANSACRegressor.html
         
         self.ransac_left = linear_model.RANSACRegressor(base_estimator=linear_model.Lasso(alpha=alpha),
-                                                        max_trials=입력,
-                                                        loss='absolute_loss',
-                                                        min_samples=self.min_pts,
-                                                        residual_threshold=self.y_margin)
+                                                        max_trials=100, # 무작위 샘플 선택을 위한 최대 반복 횟수의 기본값 100 입력
+                                                        loss='absolute_loss', # 1.2버전부터 absolute_loss 대신 loss='absolute_loss' 사용
+                                                        min_samples=self.min_pts, # 매개변수를 사용하지 않으면 None, 사용자가 값을 제공할 때는 1 이상의 int 혹은 0과 1 사이의 float값
+                                                        # 원본 데이터에서 무작위로 선택한 최소 샘플의 수이며, 절댓값으로 처리되는 것이 아닌 상댓값으로 처리
+                                                        residual_threshold=self.y_margin) # 절대오차와 평균오차를 찾음
 
         self.ransac_right = linear_model.RANSACRegressor(base_estimator=linear_model.Lasso(alpha=alpha),
-                                                        max_trials=입력,
-                                                        loss='absolute_loss',
-                                                        min_samples=self.min_pts,
-                                                        residual_threshold=self.y_margin)
-        '''
+                                                        max_trials=100, # 무작위 샘플 선택을 위한 최대 반복 횟수의 기본값 100 입력
+                                                        loss='absolute_loss', # 1.2버전부터 absolute_loss 대신 loss='absolute_loss' 사용
+                                                        min_samples=self.min_pts, # 매개변수를 사용하지 않으면 None, 사용자가 값을 제공할 때는 1 이상의 int 혹은 0과 1 사이의 float값
+                                                        # 원본 데이터에서 무작위로 선택한 최소 샘플의 수이며, 절댓값으로 처리되는 것이 아닌 상댓값으로 처리
+                                                        residual_threshold=self.y_margin) # 절대오차와 평균오차를 찾음
+        
         
         self._init_model()
 
@@ -414,9 +372,7 @@ class CURVEFit:
 
         # Random Sampling
         for d in np.arange(0, self.x_range, self.dx):
-
             idx_full_list = np.where(np.logical_and(lane_pts[0, :]>=d, lane_pts[0, :]<d+self.dx))[0].tolist()
-            
             idx_list += random.sample(idx_full_list, np.minimum(self.min_pts, len(idx_full_list)))
 
         lane_pts = lane_pts[:, idx_list]
@@ -474,39 +430,23 @@ class CURVEFit:
         y_pred_r = self.ransac_right.predict(X_pred)
 
         #END
-
         if y_left.shape[0]>=self.ransac_left.min_samples and y_right.shape[0]>=self.ransac_right.min_samples:
-
             self.update_lane_width(y_pred_l, y_pred_r)
-
         if y_left.shape[0]<self.ransac_left.min_samples:
-            
             y_pred_l = y_pred_r + self.lane_width
-
         if y_right.shape[0]<self.ransac_right.min_samples:
-
             y_pred_r = y_pred_l - self.lane_width
         
         # overlap the lane
-
         if len(y_pred_l) == len(y_pred_r):
-
             if np.mean(y_pred_l + y_pred_r):
-
                 if y_pred_r[x_pred==3.0]>0:
-                    
                     y_pred_r = y_pred_l - self.lane_width
-
                 elif y_pred_l[x_pred==3.0]<0:
-                    
                     y_pred_l = y_pred_r + self.lane_width
-
             else:
-
                 pass
-        
         else:
-
             pass
 
         return x_pred, y_pred_l, y_pred_r
@@ -542,7 +482,6 @@ class CURVEFit:
         return self.lane_path
 
     def set_vehicle_status(self, vehicle_status):
-
         odom_quaternion=(vehicle_status.pose.pose.orientation.x,vehicle_status.pose.pose.orientation.y,vehicle_status.pose.pose.orientation.z,vehicle_status.pose.pose.orientation.w)
 
         _,_,vehicle_yaw=tf.transformations.euler_from_quaternion(odom_quaternion)
@@ -550,11 +489,7 @@ class CURVEFit:
         self.vehicle_pos_x = vehicle_status.pose.pose.position.x
         self.vehicle_pos_y = vehicle_status.pose.pose.position.y
 
-
 if __name__ == '__main__':
-
     rospy.init_node('lane_fitting', anonymous=True)
-
     image_parser = IMGParser()
-
     rospy.spin() 

@@ -26,7 +26,7 @@ def srv_client():
     # 시뮬레이터에서 직접 시나리오를 만들어 저장한 뒤 저장된 파일 이름과 필요한 옵션 들을 설정하여 사용 가능하다.
     # file_name 은 String 형식이며, 나머지 옵션은 전부 Bool 형식으로 True/False 로 해당 옵션을 사용 여부를 선택 가능하다.
     scenario_setting = ScenarioLoad()
-    scenario_setting.file_name                      = 'sample_scenario'
+    scenario_setting.file_name                      = 'scenario1'
     scenario_setting.load_network_connection_data   = True
     scenario_setting.delete_all                     = True
     scenario_setting.load_ego_vehicle_data          = True
