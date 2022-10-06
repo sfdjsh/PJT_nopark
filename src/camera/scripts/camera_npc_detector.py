@@ -124,7 +124,7 @@ class NPCDetector:
         pos_y = self.ego_pos['y'] - self.car_info['position']['y']
         dist = sqrt(pos_x**2 + pos_y**2)
         angle = degrees(atan2(pos_y, pos_x))
-        # print(dist, angle)
+        print(dist, angle)
 
         if self.car_info['name'] != '' and self.car_capture_flag == 0 \
         and 0 <= abs(self.car_info['velocity']['x']) <= 1 \
