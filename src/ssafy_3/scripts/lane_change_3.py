@@ -285,10 +285,10 @@ class lc_path_pub :
             for i in range(len(global_vaild_object)):
                 for path in ref_path.poses :   
                     if global_vaild_object[i][0]==1 or global_vaild_object[i][0]==2 :  
-                        dis = sqrt(abs(local_vaild_object[i][1])**2 + abs(local_vaild_object[i][2]**2))
-                        if dis < 30:
-                            rel_distance = sqrt(abs(path.pose.position.x - global_vaild_object[i][1])**2 + 
-                            abs(path.pose.position.y - global_vaild_object[i][2])**2)                         
+                        dis = sqrt(pow(global_vaild_object[i][1] - path.pose.position.x, 2) + pow(global_vaild_object[i][2]- path.pose.position.y, 2))
+                        print(dis)
+                        if dis<2.5:
+                            rel_distance= sqrt(pow(local_vaild_object[i][1], 2) + pow(local_vaild_object[i][2], 2))                         
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
                                 self.object=[True,i]
