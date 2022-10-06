@@ -43,7 +43,9 @@
 
 ## 🛠️ 기술 스택
 
-<img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"><img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white"/><img src="https://img.shields.io/badge/GitLab-FCA121?style=for-the-badge&logo=GitLab&logoColor=white"/><img src="https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=Jira&logoColor=white"/> <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://images.velog.io/images/717lumos/post/8715706d-f855-4211-8bba-3ddeede780c4/%EA%B7%B8%EB%A6%BC1.png" style="width: 70px; height: auto;"><img src="https://media-exp1.licdn.com/dms/image/C560BAQETKrliQvfhRg/company-logo_200_200/0/1634264384949?e=2147483647&v=beta&t=I0a36vgVrypKulNIHryl15XPSa7iPXLlBNFNaUJio6c" style="width: 70px; height: auto; ">
+<img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"><img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white"/><img src="https://img.shields.io/badge/GitLab-FCA121?style=for-the-badge&logo=GitLab&logoColor=white"/><img src="https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=Jira&logoColor=white"/> <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
+![rm](./img.asset/ros_morai.png)
+
 
 
 <div id="3"></div>
@@ -138,7 +140,7 @@ __1. 카메라 센서__
 
  __2. 라이다 센서__
  - Lidar
- 
+
 	![LIDAR](./img.asset/LIDAR.gif)
 	- Point Cloud : 3차원 공간상에 퍼져있는 여러 포인트의 집합
 	- DBscan Clustering : 데이터의 밀집 지역이 한 클러스터를 구성하여 물체를 인식 (적절한 일정영역 R (eps), 최소 Sample 개수 (min_samples)를 지정)    
@@ -154,7 +156,7 @@ __1. 카메라 센서__
 ## 차량 주요 센서
 ### GPS
 
-![GPS](./img.asset/gps.png)
+![GPS](./img.asset/GPS.png)
 
 - 인공위성을 이용하여 현재위치를 알아내는 센서
 - 31개의 인공위성으로 구성 됨
