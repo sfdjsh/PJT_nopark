@@ -66,7 +66,7 @@ class pure_pursuit :
         self.current_postion = Point()
 
         self.vehicle_length = 4.3561
-        self.target_velocity = 50
+        self.target_velocity = 80
         self.min_lfd = 5
         self.max_lfd = 20
         self.lfd_gain = 0.9
