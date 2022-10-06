@@ -40,12 +40,14 @@
 
 
 <div id="2"></div>
+
 ## 🛠️ 기술 스택
 
 <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"><img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white"/><img src="https://img.shields.io/badge/GitLab-FCA121?style=for-the-badge&logo=GitLab&logoColor=white"/><img src="https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=Jira&logoColor=white"/> <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://images.velog.io/images/717lumos/post/8715706d-f855-4211-8bba-3ddeede780c4/%EA%B7%B8%EB%A6%BC1.png" style="width: 70px; height: auto;"><img src="https://media-exp1.licdn.com/dms/image/C560BAQETKrliQvfhRg/company-logo_200_200/0/1634264384949?e=2147483647&v=beta&t=I0a36vgVrypKulNIHryl15XPSa7iPXLlBNFNaUJio6c" style="width: 70px; height: auto; ">
 
 
 <div id="3"></div>
+
 ## 🎛 시스템 아키텍쳐
 ![System](./img.asset/system.png)
 
@@ -55,6 +57,7 @@
 
 
 <div id="4"></div>
+
 ##  :police_car: 주요기능 및 데모영상
 
 ### 1. 자율주행
