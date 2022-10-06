@@ -1,7 +1,8 @@
 # 사전 작업
 
 ```bash
-pip2 install boto3 mysql-connector-python==8.0.23 awscli
+pip2 install --upgrade pip
+pip2 install boto3 mysql-connector-python==8.0.23 awscli opencv-contrib-python==4.2.0.32
 aws configure
 # ACCESS_KEY_ID = 'AKIA2LPAPXE5XYE327MZ'
 # ACCESS_SECRET_KEY = '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'
