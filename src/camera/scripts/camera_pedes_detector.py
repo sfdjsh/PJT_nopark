@@ -8,20 +8,6 @@ import numpy as np
 from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridgeError
 
-# camera_pedes_detector 은 카메라로 보행자를 인식하는 Object detection 예제입니다.
-# 이번 예제에서는 이미지로부터 HoG feature 를 추출 후 사전학습된 SVM 알고리즘을 통해 보행자 영역이 분류됩니다.
-# NMS 알고리즘을 통해 분류된 윈도우들 중 가장 적합한 박스 영역을 찾아냅니다.
-
-# 노드 실행 순서 
-# 1. 이미지 subscriber 선언
-# 2. HOG descitpor 생성
-# 3. 기학습된 SVM 분류기 설정 (for peds)
-# 4. 이미지 불러오기
-# 5. 검출 (paramter 바꿔가면서 설정)
-# 6. NMS 후처리 통과
-# 7. NMS 내부 (IOU 계산)
-# 8. 추출된 좌표 Detection 용 박스 화
-
 def non_maximum_supression(bboxes, threshold=0.3):
     bboxes = sorted(bboxes, key=lambda detections: detections[3],
             reverse=True)
@@ -41,8 +27,6 @@ def non_maximum_supression(bboxes, threshold=0.3):
             y2_br = new_bbox[1] + new_bbox[3]
 
             #TODO: (7)  IOU 계산
-            # 이미지의 IoU를 계산하는 영역입니다.
-            # 위에 입력된 파라미터를 이용하여 IoU를 계산 해 보시기 바랍니다.
             x_overlap = x2_tl - x1_br
             y_overlap = y2_tl - y1_br
             overlap_area = abs(x_overlap * y_overlap)

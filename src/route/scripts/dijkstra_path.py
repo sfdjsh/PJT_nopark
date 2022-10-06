@@ -18,41 +18,6 @@ sys.path.append(current_path)
 
 from lib.mgeo.class_defs import *
 
-# mgeo_dijkstra_path_1 은 Mgeo 데이터를 이용하여 시작 Node 와 목적지 Node 를 지정하여 Dijkstra 알고리즘을 적용하는 예제 입니다.
-# 사용자가 직접 지정한 시작 Node 와 목적지 Node 사이 최단 경로 계산하여 global Path(전역경로) 를 생성 합니다.
-# 시작 Node 와 목적지 Node 는 Rviz 의 goal pose / initial pose 두 기능을 이용하여 정의합니다.
-
-# 노드 실행 순서 
-# 0. 필수 학습 지식
-# 1. Mgeo data 읽어온 후 데이터 확인
-# 2. 시작 Node 와 종료 Node 정의
-# 3. weight 값 계산
-# 4. Dijkstra Path 초기화 로직
-# 5. Dijkstra 핵심 코드
-# 6. node path 생성
-# 7. link path 생성
-# 8. Result 판별
-# 9. point path 생성
-# 10. dijkstra 경로 데이터를 ROS Path 메세지 형식에 맞춰 정의
-# 11. dijkstra 이용해 만든 Global Path 정보 Publish
-
-#TODO: (0) 필수 학습 지식
-'''
-# dijkstra 알고리즘은 그래프 구조에서 노드 간 최단 경로를 찾는 알고리즘 입니다.
-# 시작 노드부터 다른 모든 노드까지의 최단 경로를 탐색합니다.
-# 다양한 서비스에서 실제로 사용 되며 인공 위성에도 사용되는 방식 입니다.
-# 전체 동작 과정은 다음과 같습니다.
-#
-# 1. 시작 노드 지정
-# 2. 시작 노드를 기준으로 다른 노드와의 비용을 저장(경로 탐색 알고리즘에서는 비용이란 경로의 크기를 의미)
-# 3. 방문하지 않은 노드들 중 가장 적은 비용의 노드를 방문
-# 4. 방문한 노드와 인접한 노드들을 조사해서 새로 조사된 최단 거리가 기존 발견된 최단거리 보다 작으면 정보를 갱신
-#   [   새로 조사된 최단 거리 : 시작 노드에서 방문 노드 까지의 거리 비용 + 방문 노드에서 인접 노드까지의 거리 비용    ]
-#   [   기존 발견된 최단 거리 : 시작 노드에서 인접 노드까지의 거리 비용                                       ]
-# 5. 3 ~ 4 과정을 반복 
-# 
-
-'''
 class dijkstra_path_pub :
     def __init__(self):
         rospy.init_node('dijkstra_path_pub', anonymous=True)
@@ -85,7 +50,6 @@ class dijkstra_path_pub :
                 rospy.loginfo('Waiting goal pose data')
                 rospy.loginfo('Waiting init pose data')
 
-
         self.global_path_msg = Path()
         self.global_path_msg.header.frame_id = '/map'
 
@@ -102,18 +66,6 @@ class dijkstra_path_pub :
     
     def init_callback(self,msg):
         #TODO: (2) 시작 Node 와 종료 Node 정의
-        # 시작 Node 는 Rviz 기능을 이용해 지정한 위치에서 가장 가까이 있는 Node 로 한다. 
-        
-        # Rviz 의 2D Pose Estimate 기능을 이용해 시작 Node를 지정합니다.
-        # Rviz 창에서 2D Pose Estimate 기능 클릭 후 마우스 좌 클릭을 통해 원하는 위치를 지정할 수 있습니다.
-        # 출발 위치를 2D Pose Estimate 지정 하면 Rviz 에서
-        # PoseWithCovarianceStamped 형식의 ROS 메세지를 Publish 합니다.
-        # 해당 형식의 메세지를 Subscribe 해서  2D Pose Estimate 로 지정한 위치와 가장 가까운 노드를 탐색하는 합니다.
-        # 가장 가까운 Node 가 탐색 된다면 이를 "self.start_node" 변수에 해당 Node Idx 를 지정합니다.
-
-        # msg = PoseWithCovarianceStamped()
-        # print(msg)
-
         node_idx = None      
         dis = float('inf')
 
@@ -135,15 +87,6 @@ class dijkstra_path_pub :
 
     def goal_callback(self,msg):
         #TODO: (2) 시작 Node 와 종료 Node 정의
-        # 종료 Node 는 Rviz 기능을 이용해 지정한 위치에서 가장 가까이 있는 Node 로 한다.
-        
-        # Rviz 의 2D Nav Goal 기능을 이용해 도착 Node를 지정합니다.
-        # Rviz 창에서 2D Nav Goal 기능 클릭 후 마우스 좌 클릭을 통해 원하는 위치를 지정할 수 있습니다.
-        # 도착 위치를 2D Nav Goal 지정 하면 Rviz 에서 
-        # PoseStamped 형식의 ROS 메세지를 Publish 합니다.
-        # 해당 형식의 메세지를 Subscribe 해서  2D Nav Goal 로 지정한 위치와 가장 가까운 노드를 탐색하는 합니다.
-        # 가장 가까운 Node 가 탐색 된다면 이를 "self.start_node" 변수에 해당 Node Idx 를 지정합니다.
-
         node_idx = None
         dis = float('inf')
 
@@ -191,17 +134,7 @@ class Dijkstra:
 
     def get_weight_matrix(self):
         #TODO: (3) weight 값 계산
-        '''
-        # weight 값 계산은 각 Node 에서 인접 한 다른 Node 까지의 비용을 계산합니다.
-        # 계산된 weight 값 은 각 노드간 이동시 발생하는 비용(거리)을 가지고 있기 때문에
-        # Dijkstra 탐색에서 중요하게 사용 됩니다.
-        # weight 값은 딕셔너리 형태로 사용 합니다.
-        # 이중 중첩된 딕셔너리 형태로 사용하며 
-        # Key 값으로 Node의 Idx Value 값으로 다른 노드 까지의 비용을 가지도록 합니다.
-        # 아래 코드 중 self.find_shortest_link_leading_to_node 를 완성하여 
-        # Dijkstra 알고리즘 계산을 위한 Node와 Node 사이의 최단 거리를 계산합니다.
 
-        '''
         # 초기 설정
         weight = dict() 
         for from_node_id, from_node in self.nodes.items():
@@ -225,11 +158,8 @@ class Dijkstra:
 
     def find_shortest_link_leading_to_node(self, from_node,to_node):
         """현재 노드에서 to_node로 연결되어 있는 링크를 찾고, 그 중에서 가장 빠른 링크를 찾아준다"""
-        #TODO: (3) weight 값 계산
-        
-        # 최단거리 Link 인 shortest_link 변수와
-        # shortest_link 의 min_cost 를 계산 합니다.
 
+        #TODO: (3) weight 값 계산
         to_links = []
         for link in from_node.get_to_links():
             if link.to_node is to_node:
@@ -257,18 +187,6 @@ class Dijkstra:
 
     def find_shortest_path(self, start_node_idx, end_node_idx): 
         #TODO: (4) Dijkstra Path 초기화 로직
-        # s 초기화         >> s = [False] * len(self.nodes)
-        # from_node 초기화 >> from_node = [start_node_idx] * len(self.nodes)
-        '''
-        # Dijkstra 경로 탐색을 위한 초기화 로직 입니다.
-        # 변수 s와 from_node 는 딕셔너리 형태로 크기를 MGeo의 Node 의 개수로 설정합니다. 
-        # Dijkstra 알고리즘으로 탐색 한 Node 는 변수 s 에 True 로 탐색하지 않은 변수는 False 로 합니다.
-        # from_node 의 Key 값은 Node 의 Idx로
-        # from_node 의 Value 값은 Key 값의 Node Idx 에서 가장 비용이 작은(가장 가까운) Node Idx로 합니다.
-        # from_node 통해 각 Node 에서 가장 가까운 Node 찾고
-        # 이를 연결해 시작 노드부터 도착 노드 까지의 최단 경로를 탐색합니다. 
-
-        '''
         s = dict()
         from_node = dict() 
         for node_id in self.nodes.keys():

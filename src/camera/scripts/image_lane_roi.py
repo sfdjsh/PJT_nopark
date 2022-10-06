@@ -10,9 +10,7 @@ from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridgeError
 
 # image_lane_roi 는 카메라 센서를 통하여 받아온 이미지에 관심있는 부분만(차선) 만 남기고
-# 나머지 부분은 마스킹 하는 이미리 처리입니다. 관심 영역을 지정하고, 마스크를 생성, 마스크를 이미지에 합치는 과정을
-# 합니다. 
-
+# 나머지 부분은 마스킹 하는 이미리 처리입니다. 관심 영역을 지정하고, 마스크를 생성, 마스크를 이미지에 합치는 과정
 class IMGParser:
     def __init__(self):
         self.image_sub = rospy.Subscriber("/image_jpeg/compressed", CompressedImage, self.callback)
@@ -22,10 +20,6 @@ class IMGParser:
         y = 480
 
         #TODO: (1) 관심있는 영역만 지정.
-        # 4개의 포인트를 지정
-        # 이미지의 좌표를 직접 지정해도 되고,
-        # 이미지의 비율로 정의해도 됩니다.
-        # np.array 사용
         self.crop_pts = np.array([x, y])
 
     def callback(self, msg):
@@ -61,25 +55,19 @@ class IMGParser:
             mask = np.zeros((h, w), dtype=np.uint8)
             mask_value = (255)
         
-        # TODO (1) 에서 마스킹 영역을 만들었고, 관심 있는 부분만을 이미지 원본으로 하고 나머지는 255(검은색)로 반환 해 주는
-        #내용이 들어가야 합니다.
-        #마스킹 영역을 만들기 위해서 다양한 방법을 사용할 수 있습니다만, 코드에서 이미 까만 이미지를 생성했습니다.
-        #이를 이용하는 방법을 찾아야 합니다.
+        # TODO (1) 에서 마스킹 영역을 만들었고, 관심 있는 부분만을 이미지 원본으로 하고 나머지는 255(검은색)로 반환 해 주는 내용이 들어가야 합니다.
         
-        #TODO: (2) 
+        # TODO: (2) 
         # 먼저 원하는 만큼의 좌표 점들을 선으로 긋고, 시작점과 끝점을 자동으로 연결하여 다각형을 그리는 함수를 opencv 함수를
         # 찾습니다.
         points = np.array([[0, 350], [280, 200], [360, 200], [640, 350]])
         cv2.fillPoly(mask, [points], mask_value, 1)
 
-        #TODO : (3)
+        # TODO : (3)
         # 다음으로 RGB 이미지를 마스킹 하는 opencv 함수를 이용합니다. 비트연산을 하는 함수이며, 0,1을 이용하는 연산으로
         # 두 이미지의 동일한 위치에 대한 연산을 진행합니다.
         mask = cv2.bitwise_and(img, mask)
         return mask
-
-    
-
 
 if __name__ == '__main__':
     rospy.init_node('image_parser', anonymous=True)

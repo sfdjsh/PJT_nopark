@@ -1,21 +1,14 @@
 <launch>
-    <node pkg="route" type="mgeo_pub.py" name="mgeo_pub"  />
     <node pkg="route" type="gpsimu_parser.py" name="gpsimu_parser" />
+    <node pkg="route" type="tf_pub.py" name="tf"  />
+    <node pkg="route" type="mgeo_pub.py" name="mgeo_pub"  />
     <node pkg="route" type="no_parking_global_path.py" name="global_path_pub"  />
     <node pkg="route" type="no_parking_local_path.py" name="local_path_pub" />
-    <node pkg="route" type="tf_pub.py" name="tf"  />
-    <!-- <node pkg="route" type="dijkstra_path.py" name="mgeo_dijkstra_path"  /> -->
 
     <!-- npc 차량 정차 -->
     <node pkg="control" type="advanced_purepursuit.py" name="advanced_purepursuit"  />
     <!-- <node pkg="control" type="acc.py" name="ACC" /> -->
     <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route)/rviz/kcity_rviz.rviz" /> -->
-
-    <!-- npc 차량 회피 -->
-    <!-- <node pkg="control" type="lattice_planner.py" name="lattice_planner" args="/Object_topic"/>
-    <node pkg="control" type="object_advanced_purepursuit.py" name="advanced_purepursuit"  args="/lattice_path"/>
-    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route)/rviz/lane_detection_rviz.rviz" /> -->
-    <!-- <node pkg="camera" type="image_lane_fitting.py" name="image_lane_fitting" /> -->
     <node pkg="camera" type="camera_npc_detector.py" name="npc_detector" />
 
 </launch>
