@@ -41,21 +41,10 @@ class lc_path_pub :
         rospy.init_node('lc_path_pub', anonymous=True)
 
         #TODO: ros Launch File <arg> Tag 
-        # ros launch 파일 에는 여러 태그 를 사용 할 수 있지만 
-        # 그중 <arg> 태그를 사용하여 변수를 정의 할 수 있습니다.
-        # 3 장 에서는 사용하는 Path 정보와 Object 각 예제 별로 다르기 때문에
-        # launch 파일의 <arg> 태그를 사용하여 예제에 맞게 변수를 설정합니다.
-
         arg = rospy.myargv(argv=sys.argv)
         object_topic_name = arg[1]
 
         #TODO: (1) subscriber, publisher 선언
-
-        # Gloabl Path 와 Odometry, Object 데이터를 수신 할 Subscriber 를 만들고 
-        # lane_change_path 를 전송 할 publisher 변수를 만든다.
-        # lane_change_path 는 차선변경 예제에서 활용할 지역경로(Loacl Path)이다.
-        # lane_change_path 의 Topic 이름은 '/lane_change_path' 이고
-        # ROS 메시지 형식은 Path 이다.
         rospy.Subscriber(object_topic_name, ObjectStatusList, self.object_info_callback)
         rospy.Subscriber("/odom", Odometry, self.odom_callback )
         self.global_path_pub = rospy.Publisher("/global_path", Path, queue_size=10)
@@ -107,8 +96,6 @@ class lc_path_pub :
         self.current_lane = 1
 
         #TODO: (3) 읽어 온 경로 데이터를 Global Path 로 지정
-
-        # 읽어 온 Path 데이터 중 Ego 차량의 시작 경로를 지정합니다.
         global_path = self.lc_1
 
         rate = rospy.Rate(10) # 10hz
@@ -126,8 +113,6 @@ class lc_path_pub :
                 global_path = self.lc_planning(global_npc_info,local_npc_info,currnet_waypoint,global_path)
 
                 #TODO: (9) 경로 데이터 Publish
-                
-                # 경로 데이터 메세지 를 전송하는 publisher 를 만든다.
                 self.local_path_pub.publish(self.local_path_msg)
                 self.global_path_pub.publish(global_path)
 
@@ -225,15 +210,8 @@ class lc_path_pub :
         return global_npc_info, local_npc_info
 
     def lc_planning(self,global_obj,local_obj,currnet_waypoint,global_path):
+
         #TODO: (5) 장애물이 있다면 주행 경로를 변경 하도록 로직 작성
-        '''
-        # 전방에 장애물이 있다면 차선 변경을 시작하는 로직을 작성합니다.
-        # 차선 변경을 시작하면 차선 변경을 위한 경로를 생성합니다.
-        # 차선 변경을 위한 경로를 주행 중 경로 끝에 도달하면 차선 변경을 한 차선으로 경로를 변경합니다. 
-        # 차선변경을 시작하면 경로 상 장애물은 체크 하지 않도록 합니다.
-
-        '''
-
         lane_change_distance = 30 * 2 # (point-to-point distance 0.5m)
 
         if self.lane_change == True:
@@ -271,22 +249,12 @@ class lc_path_pub :
     def check_object(self,ref_path,global_vaild_object,local_vaild_object):
         #TODO: (4) 주행 경로상의 장애물 유무 확인
         self.object=[False,0]
-        
-        # 주행 경로 상의 장애물의 유무를 파악합니다.
-        # 장애물이 한개 이상 있다면 self.object 변수의 첫번째 값을 True 로 둡니다.
-        # 장애물의 대한 정보는 List 형식으로 self.object 변수의 두번째 값으로 둡니다.
-        # 장애물의 유무 판단은 주행 할 경로에서 얼마나 떨어져 있는지를 보고 판단 합니다.
-        # 아래 예제는 주행 경로에서 Object 까지의 거리를 파악하여 
-        # 경로를 기준으로 2.5 m 안쪽에 있다면 주행 경로 내 장애물이 있다고 판단 합니다.
-        # 주행 경로 상 장애물이 여러게 있는 경우 가장 가까이 있는 장애물 정보를 가지도록 합니다.
-
         if len(global_vaild_object) > 0  :
             min_rel_distance = float('inf')
             for i in range(len(global_vaild_object)):
                 for path in ref_path.poses :   
                     if global_vaild_object[i][0]==1 or global_vaild_object[i][0]==2 :  
                         dis = sqrt(pow(global_vaild_object[i][1] - path.pose.position.x, 2) + pow(global_vaild_object[i][2]- path.pose.position.y, 2))
-                        print(dis)
                         if dis<2.5:
                             rel_distance= sqrt(pow(local_vaild_object[i][1], 2) + pow(local_vaild_object[i][2], 2))                         
                             if rel_distance < min_rel_distance:
@@ -297,26 +265,13 @@ class lc_path_pub :
         out_path=Path()  
         out_path.header.frame_id='/map'
 
-        # 지역 좌표계로 변환
         #TODO: (6) 좌표 변환 행렬 생성
-
-        # 좌표 변환 행렬을 만듭니다.
-        # 차선 변경 경로를 만들기 위해서 차선변경을 시작하는 Point 좌표에서 
-        # 차선 변경이 끝나는 Point 좌표의 상대 위치를 계산해야 합니다.
-        # 계산 된 차선변경 종료 지점과 시작 지점을 연결 하기 위한 좌표 변환 행렬을 작성합니다.
-
         translation = [start_point.pose.position.x, start_point.pose.position.y]
         theta       = atan2(start_next_point.pose.position.y-start_point.pose.position.y, start_next_point.pose.position.x-start_point.pose.position.x)
 
         trans_matrix = np.array([   [cos(theta), -sin(theta), translation[0]],
                                     [sin(theta), cos(theta), translation[1]],
                                     [0, 0, 1] ])
-
-        # trans_matrix_t = np.array([
-        #     [trans_matrix[0][0], trans_matrix[1][0], -(trans_matrix[0][0] * translation[0] + trans_matrix[1][0] * translation[1])],
-        #     [trans_matrix[0][1], trans_matrix[1][1], -(trans_matrix[0][1] * translation[0] + trans_matrix[1][1] * translation[1])],
-        #     [0, 0, 1]
-        # ])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
 
@@ -339,26 +294,10 @@ class lc_path_pub :
             waypoints_x.append(i*x_interval)
 
         #TODO: (7) 3차 곡선을 이용한 주행 경로 생성
-        
-        # 3 차 방정식을 이용하여 부드러운 차량 거동을 위한 차선변경 경로를 만듭니다.
-        # 시작 위치와 목표 위치 사이 부드러운 곡선 경로를 주행하도록 합니다.
-        # 차량이 차선 변경 시 알맞을 조향 각도를 조절하여 차선을 변경합니다.
-        # 이때 큰 조향각을 가진다면 차량의 횡방향 가속도가 커지고 거동의 안정성이 떨어집니다.
-        # 차량이 안정적으로 주행 할 수 있는 경로를 만들어 주는 예제입니다.
-        # 
-        # 차량이 안정적으로 주행 할 수 있는 경로를 만들기 위해 3차 방정식을 이용합니다.
-        # EX )  3차 방정식
-        #       
-        #       f(x) = a*x^3 + b*x^2 + c*x + d
-        # 
-        # 위에 예시로 작성한 3차 방정식을 아래 예제에 작성 한다.
-
-        # 여기 부분 부터
         a = 2*(y_end - y_start)/(x_start - x_end)**3
         b = (-3*(x_start + x_end)*(y_end - y_start)) / (x_start - x_end)**3
         c = (6*(y_end - y_start)*x_start*x_end)/(x_start - x_end)**3
         d = (y_start + x_start**2 * (y_end - y_start)*(x_start - 3*x_end)) / (x_start - x_end)**3
-        # 여기 부분 까지 수정 필요
 
         for i in waypoints_x:
             # 3 차 방정식 수식을 작성한다. (f(x) = a*x^3 + b*x^2 + c*x + d)
@@ -367,13 +306,6 @@ class lc_path_pub :
 
 
         #TODO: (8) ros path 메시지 형식 경로 데이터 생성
-
-        # out_path 변수에 정의한 ros path 데이터 형식에 맞춰 경로 데이터를 만든다.
-        # Local Result 는 차선 변경 시작 위치 기준 좌표의 Point 정보이고
-        # Global Result 는 map 기준 좌표의 Point 좌표 이다.
-        # 좌표 변환 행렬을 통해 Local Result 를 이용해 Global Result 를 계산한다.
-        # Global Result 는 차선 변경 Path 의 데이터가 된다.
-
         for i in range(0,len(waypoints_y)) :
             local_result = np.array([[waypoints_x[i]],[waypoints_y[i]],[1]])
             global_result = trans_matrix.dot(local_result)
@@ -392,7 +324,6 @@ class lc_path_pub :
         # 직선 거리 추가
         # 차선 변경 직 후 바로 목표 차선으로의 경로 변경이 아닌 안전정인 주행을 위해서 
         # 변경 이후 직선 경로를 일부 추가해 준다.
-
         for k in range(end_waypoint_idx,end_waypoint_idx+40):
             read_pose=PoseStamped()
             read_pose.pose.position.x = lc_path.poses[k].pose.position.x

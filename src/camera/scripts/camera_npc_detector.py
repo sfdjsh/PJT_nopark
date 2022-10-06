@@ -116,9 +116,6 @@ class NPCDetector:
         except CvBridgeError as e:
             print(e)
 
-        # cv2.imshow("Image window", img_bgr)
-        # cv2.waitKey(1) 
-
         # 나와 상대 간 거리, 각도, 신호 여부, 속도, 차선 물었는가?
         pos_x = self.ego_pos['x'] - self.car_info['position']['x']
         pos_y = self.ego_pos['y'] - self.car_info['position']['y']

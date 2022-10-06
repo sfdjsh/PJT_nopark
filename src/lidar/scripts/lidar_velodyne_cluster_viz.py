@@ -16,17 +16,6 @@ import sensor_msgs.point_cloud2 as pc2
 
 from tf.transformations import euler_from_quaternion,quaternion_from_euler
 
-
-# Lida Velodyne Cluster Viz Node 는 Lida Velodyne Cluster Node 에서 송신하는 장애물 정보를 받아 시각화 하는 예제입니다.
-# Lida Velodyne Cluster Node 에서 DBSCAN 을 통해 장애물의 위치 정보를 얻을 수 있습니다.
-# 이번 예제에서는 수신 받은 DBSCAN 장애물 정보를 시각화를 위한 Point Cloud 데이터와
-# 시뮬레이터에서 나오는 morai 메시지 ObjectStatus 메시지 형식으로 변경하여 다시 ros 형식으로 송신합니다.
-
-# 노드 실행 순서
-# 1. 좌표 변환 행렬 생성
-# 2. PointCloud와 ObjectStatus 형식에 맞춘 메시지 데이터 생성
-# 3. PointCloud와 ObjectStatus 메시지 송신
-
 class Cluster_viz:
 
     def __init__(self):
@@ -58,9 +47,6 @@ class Cluster_viz:
 
                 for num,i in enumerate(self.cluster_data.poses) :
                     #TODO: (2) PointCloud와 ObjectStatus 형식에 맞춘 메시지 데이터 생성
-                    #local_result =
-                    #global_result =
-                   
                     tmp_point=Point32()
                     tmp_point.x = i.position.x
                     tmp_point.y = i.position.y

@@ -19,28 +19,7 @@ from sensor_msgs.msg import CompressedImage
 from geometry_msgs.msg import PoseStamped,Point
 from morai_msgs.msg import CtrlCmd, EgoVehicleStatus
 
-# image_lane_fitting 은 Camera Image를 활용하여 차선 정보를 인지하는 예제입니다.
-# Camera Image로 부터 차선의 위치에 해당하는 Pixel 좌표를 계산한 뒤,
-# 좌우 차선 각각 RANSAC을 활용한 3차 곡선 근사를 수행합니다.
-
-# 노드 실행 순서
-# 1. CURVEFIT Parameter 입력
-# 2. RANSAC Parameter 입력
-
-# 각 클래스에 대한 설명
-# 1. IMGParser은 차선을 읽어들이고 CURVEFit을 적용하여 이진화, roi를 통해 라인을 그리는 클래스 입니다.
-# 2. BEVTransform은 상대 벡터의 추정값을 찾는, 칼만 필터를 활용하는 클래스 입니다.
-# 3. CURVEFit은 RANSAC 알고리즘을 활용하여 커브를 피팅한 다음 라인을 새로 그리는 클래스 입니다.
-
-class IMGParser: ################################# (이 클래스가 일부 작업이 포함되어 있는 인지 분야 입니다.)
-    # IMGParser은 차선을 읽어들이는 클래스 입니다. (인지만을 구분 대상으로 한다면 이 클래스가 인지입니다.)
-    # 먼저 Subscriber과 Publisher을 통해 노드를 읽어들이고 토픽을 발행합니다.
-    # 다음으로 np.array를 통해 차선 정보를 읽어들인다음 크롭의 과정을 거칩니다.
-    # 이 때, 센서의 파라미터와 카메라의 파라미터를 읽어들이는 작업을 거칩니다.
-    # 셋째, 읽어들인 파라미터를 통하여 CURVEFit 파라미터를 결정하는 파라미터를 작성합니다. (회귀분석 개념 부족으로 인한 미구현)
-    # 이 때, 파라미터를 결정하는 값은 하단의 class인 CURVEFit 입니다.
-    # 넷째, 칼만 필터를 활용하는 BEVTransform 클래스를 통과하여 커브 피팅의 값을 버드 뷰 등으로 보여줍니다.
-    # 이 때, 이진화, roi, 커브 피팅이 마쳐진 새로운 차선의 정보가 정의됩니다.
+class IMGParser:
     def __init__(self, pkg_name = 'camera'):
 
         self.image_sub = rospy.Subscriber("/image_jpeg/compressed", CompressedImage, self.callback)
@@ -72,14 +51,7 @@ class IMGParser: ################################# (이 클래스가 일부 작�
 
         bev_op = BEVTransform(params_cam=params_cam)
         #TODO: (1) CURVEFit Parameter 입력
-        # CURVEFit Class의 Parameter를 결정하는 영역입니다.
-        # 하단의 CURVEFit Class에 대한 정보를 바탕으로 적절한 Parameter를 입력하기 바랍니다.
         curve_learner = CURVEFit(order=100, lane_width=3, y_margin=0.6, x_range=100, min_pts=1)
-        # order 표본 개수(?) sample의 값이면 = max 100
-        # lane_width 차선의 폭 = 3m
-        # y_margin 평균 오차(?) = 차가 한 가운데 있을 때를 가정 우로 0.6m
-        # x_range 실행 횟수(?) = 표본 개수
-        # min_pts = min_samples 원본 데이터에서 무작위로 선택한 최소 샘플 수로 int일 경우 1 이상
         
         #END
         rate = rospy.Rate(10)
@@ -150,7 +122,6 @@ class IMGParser: ################################# (이 클래스가 일부 작�
         if len(img.shape)==3:
 
             # num of channel = 3
-
             c = img.shape[2]
             mask = np.zeros((h, w, c), dtype=np.uint8)
 
@@ -159,7 +130,6 @@ class IMGParser: ################################# (이 클래스가 일부 작�
         else:
     
             # grayscale
-
             c = img.shape[2]
             mask = np.zeros((h, w, c), dtype=np.uint8)
 
@@ -174,11 +144,6 @@ class IMGParser: ################################# (이 클래스가 일부 작�
 
 
     def draw_lane_img(self, img, leftx, lefty, rightx, righty):
-        '''
-        place the lidar points into numpy arrays in order to make intensity map
-        \n img : source image
-        \n leftx, lefty, rightx, righty : curve fitting result
-        '''
         point_np = cv2.cvtColor(np.copy(img), cv2.COLOR_GRAY2BGR)
 
         #Left Lane
@@ -342,12 +307,6 @@ class BEVTransform:
         return M
 
     def project2img_mtx(self,params_cam):    
-        '''
-        project the lidar points to 2d plane
-        \n xc, yc, zc : xyz components of lidar points w.r.t a camera coordinate
-        \n params_cam : parameters from cameras 
-
-        '''
         # focal lengths
         fc_x = params_cam["HEIGHT"]/(2*np.tan(np.deg2rad(params_cam["FOV"]/2)))
         fc_y = params_cam["HEIGHT"]/(2*np.tan(np.deg2rad(params_cam["FOV"]/2)))
@@ -398,12 +357,7 @@ class CURVEFit:
 
         self.lane_path = Path()
         
-        #TODO: (2) RANSAC Parameter 입력
-        
-        # RANSAC Parameter를 결정하는 영역입니다.
-        # RANSAC의 개념 및 아래 링크를 참고하여 적절한 Parameter를 입력하기 바랍니다.
-        # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RANSACRegressor.html
-        
+        #TODO: (2) RANSAC Parameter 입력    
         self.ransac_left = linear_model.RANSACRegressor(base_estimator=linear_model.Lasso(alpha=alpha),
                                                         max_trials=100, # 무작위 샘플 선택을 위한 최대 반복 횟수의 기본값 100 입력
                                                         loss='absolute_loss', # 1.2버전부터 absolute_loss 대신 loss='absolute_loss' 사용

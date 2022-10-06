@@ -12,12 +12,6 @@ from cv_bridge import CvBridgeError
 # image parser binarization Node 는 시뮬레이터에서 송신하는 Camera 센서 정보를 받아 실시간으로 출력하는 예제입니다.
 # 출력시 hsv 특정 영역의 색상 범위를 지정하여 원하는 색상의 영역만 특정하여 출력합니다.
 
-# 노드 실행 순서 
-# 1. HSV 색상 영역 지정
-# 2. 특정 영역의 색상 검출
-# 3. 비트 연산을 통핸 두 이미지의 합
-# 4. 이미지 출력
-
 class IMGParser:
     def __init__(self):
         self.image_sub = rospy.Subscriber("/image_jpeg/compressed", CompressedImage, self.callback)
@@ -32,7 +26,7 @@ class IMGParser:
         
         img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
 
-        #TODO: (1)
+        #TODO: (1) 
         # 특정 색상 영역을 검출하기 위해 범위를 지정합니다
         # 하한 값 행렬과 상한 값 행렬을 정해 그 사이의 값 만을 출력 하도록 합니다.
         # 이번 예제에서는 흰색 영역을 검출합니다.

@@ -12,22 +12,6 @@ import sympy as sy
 import tf
 from tf.transformations import euler_from_quaternion,quaternion_from_euler
 
-# acc 는 차량의 Adaptive Cruise Control 예제입니다.
-# 차량 경로상의 장애물을 탐색하여 탐색된 차량과의 속도 차이를 계산하여 Cruise Control 을 진행합니다.
-
-# 노드 실행 순서 
-# 0. 필수 학습 지식
-# 1. subscriber, publisher 선언
-# 2. 속도 비례 Look Ahead Distance 값 설정
-# 3. 좌표 변환 행렬 생성
-# 4. Steering 각도 계산
-# 5. PID 제어 생성
-# 6. 도로의 곡률 계산
-# 7. 곡률 기반 속도 계획
-# 8. 경로상의 장애물 유무 확인 (차량, 사람, 정지선 신호)
-# 9. 장애물과의 속도와 거리 차이를 이용하여 ACC 를 진행 목표 속도를 설정
-# 10. 제어입력 메세지 Publish
-
 class pure_pursuit :
     def __init__(self):
         rospy.init_node('pure_pursuit', anonymous=True)
