@@ -68,7 +68,7 @@ class lc_path_pub :
 
         #TODO: (2) 두개의 차선 경로 의 텍스트파일을 읽기 모드로 열기
         rospack=rospkg.RosPack()
-        pkg_path=rospack.get_path('route')
+        pkg_path=rospack.get_path('ssafy_3')
 
         lc_1 = pkg_path + '/path' + '/lc_1.txt'
         self.f=open(lc_1,'r')
@@ -233,6 +233,7 @@ class lc_path_pub :
         # 차선변경을 시작하면 경로 상 장애물은 체크 하지 않도록 합니다.
 
         '''
+
         lane_change_distance = 30 * 2 # (point-to-point distance 0.5m)
 
         if self.lane_change == True:
@@ -284,10 +285,10 @@ class lc_path_pub :
             for i in range(len(global_vaild_object)):
                 for path in ref_path.poses :   
                     if global_vaild_object[i][0]==1 or global_vaild_object[i][0]==2 :  
-                        dis = sqrt(abs(local_vaild_object[i][1])**2 + abs(local_vaild_object[i][2]**2))
-                        if dis < 30:
-                            rel_distance = sqrt(abs(path.pose.position.x - global_vaild_object[i][1])**2 + 
-                            abs(path.pose.position.y - global_vaild_object[i][2])**2)                         
+                        dis = sqrt(pow(global_vaild_object[i][1] - path.pose.position.x, 2) + pow(global_vaild_object[i][2]- path.pose.position.y, 2))
+                        print(dis)
+                        if dis<2.5:
+                            rel_distance= sqrt(pow(local_vaild_object[i][1], 2) + pow(local_vaild_object[i][2], 2))                         
                             if rel_distance < min_rel_distance:
                                 min_rel_distance = rel_distance
                                 self.object=[True,i]
@@ -310,6 +311,12 @@ class lc_path_pub :
         trans_matrix = np.array([   [cos(theta), -sin(theta), translation[0]],
                                     [sin(theta), cos(theta), translation[1]],
                                     [0, 0, 1] ])
+
+        # trans_matrix_t = np.array([
+        #     [trans_matrix[0][0], trans_matrix[1][0], -(trans_matrix[0][0] * translation[0] + trans_matrix[1][0] * translation[1])],
+        #     [trans_matrix[0][1], trans_matrix[1][1], -(trans_matrix[0][1] * translation[0] + trans_matrix[1][1] * translation[1])],
+        #     [0, 0, 1]
+        # ])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
 
@@ -346,10 +353,12 @@ class lc_path_pub :
         # 
         # 위에 예시로 작성한 3차 방정식을 아래 예제에 작성 한다.
 
+        # 여기 부분 부터
         a = 2*(y_end - y_start)/(x_start - x_end)**3
         b = (-3*(x_start + x_end)*(y_end - y_start)) / (x_start - x_end)**3
         c = (6*(y_end - y_start)*x_start*x_end)/(x_start - x_end)**3
         d = (y_start + x_start**2 * (y_end - y_start)*(x_start - 3*x_end)) / (x_start - x_end)**3
+        # 여기 부분 까지 수정 필요
 
         for i in waypoints_x:
             # 3 차 방정식 수식을 작성한다. (f(x) = a*x^3 + b*x^2 + c*x + d)
