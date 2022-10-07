@@ -125,8 +125,8 @@ class NPCDetector:
         if self.car_info['name'] != '' and self.car_capture_flag == 0 \
         and 0 <= abs(self.car_info['velocity']['x']) <= 1 \
         and 0 <= abs(self.car_info['velocity']['y']) <= 1 \
-        and 5 <= dist <= 6 \
-        and -160 <= angle <= -120:
+        and 5 <= dist <= 7 \
+        and -180 <= angle <= -120:
             print("진입 완료")
             self.file_path = self.home_dir + '/S07P22C109/car_capture/{}.jpg'.format(self.car_info['name'])
             self.object_path = 'car_picture/{}.jpg'.format(self.car_info['name'])
