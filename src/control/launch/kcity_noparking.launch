@@ -1,0 +1,10 @@
+<launch>
+    <node pkg="route" type="gpsimu_parser.py" name="gpsimu_parser" />
+    <node pkg="route" type="tf_pub.py" name="tf"  />
+    <node pkg="route" type="mgeo_pub.py" name="mgeo_pub"  />
+    <node pkg="route" type="no_parking_global_path.py" name="global_path_pub"  />
+    <node pkg="route" type="no_parking_local_path.py" name="local_path_pub" />
+    <node pkg="control" type="advanced_purepursuit.py" name="advanced_purepursuit"  />
+    <node pkg="camera" type="camera_npc_detector.py" name="npc_detector" />
+
+</launch>
