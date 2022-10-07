@@ -193,7 +193,7 @@ __1. 카메라 센서__
 - 눈이나 비에 반사될 수 있어 악천후에 약함
 
 ## 🎥 UCC 보러가기
-
+https://www.youtube.com/watch?v=t2eoXKweQ3I
 
 ## 🧑‍💻 개발 멤버 소개
 ![TeamMember](./img.asset/TeamMember.png)
